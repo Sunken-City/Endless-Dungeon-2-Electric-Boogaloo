@@ -1,0 +1,50 @@
+﻿Build started 4/20/2014 4:33:24 PM.
+     1>Project "C:\Users\Pico\documents\visual studio 2010\Projects\picogame\picogame\picogame.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\picogame.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt World.cpp main.cpp
+         main.cpp
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\player.h(9): warning C4584: 'Player' : base-class 'Serializeable' is already a base-class of 'Actor'
+                 c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\serializeable.h(7) : see declaration of 'Serializeable'
+                 c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\actor.h(15) : see declaration of 'Actor'
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\main.cpp(196): warning C4101: 'error' : unreferenced local variable
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\main.cpp(202): warning C4101: 'error' : unreferenced local variable
+         World.cpp
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\player.h(9): warning C4584: 'Player' : base-class 'Serializeable' is already a base-class of 'Actor'
+                 c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\serializeable.h(7) : see declaration of 'Serializeable'
+                 c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\actor.h(15) : see declaration of 'Actor'
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(89): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(98): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(114): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(150): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(455): warning C4244: 'return' : conversion from 'double' to 'int', possible loss of data
+         Generating Code...
+       Link:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.exe" /NOLOGO /LIBPATH:"C:\Users\Pico\Documents\Visual Studio 2010\Projects\picogame\tilelibrary\base_materials\lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib tilelibd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\picogame.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.lib" /MACHINE:X86 Debug\Actor.obj
+         Debug\ActorDef.obj
+         Debug\Cell.obj
+         Debug\Console.obj
+         Debug\Dice.obj
+         Debug\main.obj
+         Debug\Pickup.obj
+         Debug\PickupDef.obj
+         Debug\Player.obj
+         Debug\Serializer.obj
+         Debug\Shop.obj
+         Debug\Sound.obj
+         Debug\TileSet.obj
+         Debug\World.obj
+         LINK : C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.exe not found or not built by the last incremental link; performing full link
+            Creating library C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.lib and object C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.exp
+         picogame.vcxproj -> C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.exe;#1" /manifest Debug\picogame.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\picogame.unsuccessfulbuild".
+         Touching "Debug\picogame.lastbuildstate".
+     1>Done Building Project "C:\Users\Pico\documents\visual studio 2010\Projects\picogame\picogame\picogame.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:14.77
