@@ -3,6 +3,7 @@
 #include "Dice.h"
 #include <string>
 #include <functional>
+#include <map>
 
 class Pickup;
 class Player;
@@ -17,8 +18,12 @@ public:
 	void serialize(Serializer write);
 	void reconstruct(Serializer read);
 
+	typedef map<behavior, function<void(Player*, Pickup*)>> funcMap;
+	static funcMap behaviors;
+	static funcMap initBehaviors();
+
 	PickupDef();
-	PickupDef(int difficulty, function<void(Player*, Pickup*)> u, behavior itemType);
+	PickupDef(int difficulty, behavior itemType);
 	PickupDef(int tileNumber, string name, int durability, int value, function<void(Player *, Pickup *)> u, behavior itemType);
 	~PickupDef();
 	int Tile();

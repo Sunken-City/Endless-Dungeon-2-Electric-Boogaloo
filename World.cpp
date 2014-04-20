@@ -98,15 +98,16 @@ void World::pickupInit()
 	srand(time(0));
 	for (int i = 0; i < 5; i++)
 	{
-		pickups.push_back(new PickupDef(difficultyLevel, [&](Player* plr, Pickup* item){}, GP));
-		pickups.push_back(new PickupDef(difficultyLevel, [&](Player* plr, Pickup* item){}, GP));
-		pickups.push_back(new PickupDef(difficultyLevel, [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), item->Type().Value()/10); Sound::play("grandHeal.sfs");}, HEALTH));
-		pickups.push_back(new PickupDef(difficultyLevel, [&](Player* plr, Pickup* item){plr->equip(item);}, WEAPON));
-		pickups.push_back(new PickupDef(difficultyLevel, [&](Player* plr, Pickup* item){plr->equip(item);}, SHIELD));
-		pickups.push_back(new PickupDef(difficultyLevel, [&](Player* plr, Pickup* item){plr->equip(item);}, ARMOR));
+		pickups.push_back(new PickupDef(difficultyLevel, GP));
+		pickups.push_back(new PickupDef(difficultyLevel, GP));
+		pickups.push_back(new PickupDef(difficultyLevel, HEALTH));
+		pickups.push_back(new PickupDef(difficultyLevel, WEAPON));
+		pickups.push_back(new PickupDef(difficultyLevel, SHIELD));
+		pickups.push_back(new PickupDef(difficultyLevel, ARMOR));
+		pickups.push_back(new PickupDef(difficultyLevel, SPELL));
 	}
-	pickups.push_back(new PickupDef(0x367, "Scroll of Healing", 5, 100, [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), 0); Sound::play("grandHeal.sfs");}, SPELL));
-	pickups.push_back(new PickupDef(0x388, "Alchemy", 1, 100, [&](Player* plr, Pickup* item){plr->gold *= 2; Sound::play("oceanWave.sfs");}, SPELL));
+	//pickups.push_back(new PickupDef(0x367, "Scroll of Healing", 5, 100, [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), 0); Sound::play("grandHeal.sfs");}, SPELL));
+	//pickups.push_back(new PickupDef(0x388, "Alchemy", 1, 100, [&](Player* plr, Pickup* item){plr->gold *= 2; Sound::play("oceanWave.sfs");}, SPELL));
 }
 
 void World::styleInit()
@@ -390,15 +391,17 @@ void World::initShop()
 	} 
 	//I have to do the for loop multiple times so that the order is correct.
 	for (int i = 0; i < 200; i+=50)
-		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), item->Type().Value()/10); Sound::play("grandHeal.sfs");}, HEALTH)));
+		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, HEALTH)));
 	for (int i = 0; i < 200; i+=50)
-		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, [&](Player* plr, Pickup* item){plr->equip(item);}, WEAPON)));
+		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, WEAPON)));
 	for (int i = 0; i < 200; i+=50)
-		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, [&](Player* plr, Pickup* item){plr->equip(item);}, SHIELD)));
+		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, SHIELD)));
 	for (int i = 0; i < 200; i+=50)
-		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, [&](Player* plr, Pickup* item){plr->equip(item);}, ARMOR)));
-	this->inventory.push_back(new Pickup(PickupDef(0x367, "Scroll of Healing", 5, 100, [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), 0); Sound::play("grandHeal.sfs");}, SPELL)));
-	this->inventory.push_back(new Pickup(PickupDef(0x388, "Alchemy", 1, 100, [&](Player* plr, Pickup* item){plr->gold *= 2; Sound::play("oceanWave.sfs");}, SPELL)));
+		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, ARMOR)));
+	for (int i = 0; i < 200; i+=50)
+		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, SPELL)));
+	//this->inventory.push_back(new Pickup(PickupDef(0x367, "Scroll of Healing", 5, 100, [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), 0); Sound::play("grandHeal.sfs");}, SPELL)));
+	//this->inventory.push_back(new Pickup(PickupDef(0x388, "Alchemy", 1, 100, [&](Player* plr, Pickup* item){plr->gold *= 2; Sound::play("oceanWave.sfs");}, SPELL)));
 
 }
 

@@ -3,17 +3,30 @@
 #include "Player.h"
 
 
+PickupDef::funcMap PickupDef::behaviors = initBehaviors();
+
+PickupDef::funcMap PickupDef::initBehaviors()
+{
+	funcMap newMap;
+	newMap[GP] = [&](Player* plr, Pickup* item){};
+	newMap[HEALTH] = [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), item->Type().Value()/10); Sound::play("grandHeal.sfs");};
+	newMap[WEAPON] = [&](Player* plr, Pickup* item){plr->equip(item);};
+	newMap[SHIELD] = newMap[WEAPON];
+	newMap[ARMOR] = newMap[WEAPON];
+	newMap[SPELL] = [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), 0); Sound::play("grandHeal.sfs");};
+	return newMap;
+}
+
 PickupDef::PickupDef()
 {
 
 }
 
-
-PickupDef::PickupDef(int difficulty, function<void(Player*, Pickup*)> u, behavior itemType)
+PickupDef::PickupDef(int difficulty, behavior itemType)
 {
 	int offset = ((rand() % 50) - 25);
 	difficulty += offset;
-	this->use = u;
+	this->use = behaviors[itemType];
 	this->type = itemType;
 
 	if (itemType == GP)
@@ -50,6 +63,13 @@ PickupDef::PickupDef(int difficulty, function<void(Player*, Pickup*)> u, behavio
 		this->durability = 30 - offset;
 		this->effectValue = (difficulty / 20);
 		this->name = "Armor";
+	}
+	else if (itemType == SPELL)
+	{
+		this->tileNum = 0x367 + min((difficulty / 200), 0x6);
+		this->durability = 1;
+		this->effectValue = (difficulty / 20);
+		this->name = "Healing Scroll";
 	}
 	
 }
