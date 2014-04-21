@@ -50,6 +50,12 @@ void World::serialize(Serializer write)
 			itr->serialize(write);
 		}
 	}
+	int inventorySize = inventory.size();
+	write.IO<int>(inventorySize);
+	for (vector<Pickup*>::iterator itr = inventory.begin(); itr != inventory.end(); itr++)
+	{
+		(*itr)->serialize(write);
+	}
 }
 
 void World::reconstruct(Serializer read)
@@ -78,9 +84,14 @@ void World::reconstruct(Serializer read)
 			itr->reconstruct(read);
 		}
 	}
+	int inventorySize;
+	read.IO<int>(inventorySize);
+	for (int i = 0; i < inventorySize; i++)
+	{
+		this->inventory.push_back(Pickup::reconstruct(read));
+	}
 	actorInit();
-	pickupInit();
-	initShop();
+	this->Shop = findShop();
 }
 
 
@@ -373,6 +384,19 @@ void World::setStairs()
 		}
 	} 
 } 
+
+Cell* World::findShop()
+{
+	for (int i = 0; i < Settings::worldx; i++)
+	{
+		for (int j = 0; j < Settings::worldy; j++)
+		{
+			if (map[i][j]->getType() == SHOP)
+				return map[i][j];
+		}
+	}
+	return 0; //This is a problem.
+}
 
 void World::initShop()
 {

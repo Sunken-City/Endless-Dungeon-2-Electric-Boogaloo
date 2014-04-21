@@ -49,6 +49,7 @@ public:
 	void setStairs();
 	void nextFloor(Player* plr);
 	void initShop();
+	Cell* findShop();
 
 	void update(Player* plr);
 	void updateVisibility(Player* plr);
