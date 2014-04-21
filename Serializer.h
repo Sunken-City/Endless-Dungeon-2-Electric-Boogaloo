@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdio>
 #include <cstring>
+#include <stdexcept>
 
 class Serializer
 {
@@ -19,4 +20,12 @@ template<class T> void Serializer::IO(T& IOable)
 		fread(&IOable, sizeof(T), 1, this->file);
 	else
 		fwrite(&IOable, sizeof(T), 1, this->file);
+	if (feof(file)) {
+		throw TruncatedFileException();
+    }
 }
+
+class TruncatedFileException : public std::runtime_error {
+public:
+  TruncatedFileException() : std::runtime_error("TruncatedFileException") { }
+};

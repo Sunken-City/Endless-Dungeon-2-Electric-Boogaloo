@@ -28,6 +28,20 @@ Dice::~Dice()
 
 }
 
+void Dice::serialize(Serializer write)
+{
+	write.IO<int>(this->rolls);
+	write.IO<int>(this->sides);
+	write.IO<int>(this->modifier);
+}
+
+void Dice::reconstruct(Serializer read)
+{
+	read.IO<int>(this->rolls);
+	read.IO<int>(this->sides);
+	read.IO<int>(this->modifier);
+}
+
 int Dice::roll()
 {
 	int total = 0;

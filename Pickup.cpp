@@ -39,7 +39,6 @@ void Pickup::serialize(Serializer write)
 	write.IO<int>(this->tileNum);
 	this->position.serialize(write);
 	this->type.serialize(write);
-	//write.IO<char*>(this->name);
 	write.IO<int>(this->durability);
 	write.IO<int>(this->inventoryPosition);
 	write.IO<bool>(this->equipped);
@@ -51,7 +50,6 @@ Pickup* Pickup::reconstruct(Serializer read)
 	read.IO<int>(p->tileNum);
 	p->position.reconstruct(read);
 	p->type = *PickupDef::reconstruct(read);
-	//read.IO<char*>(p->name);
 	read.IO<int>(p->durability);
 	read.IO<int>(p->inventoryPosition);
 	read.IO<bool>(p->equipped);
@@ -139,7 +137,7 @@ void Pickup::describe()
 	if (this->type.ItemType() == GP)
 		description << this->Type().Value() << " Gold Pieces";
 	else
-		description << this->Name() << " (+" << this->Type().Value() << ") Use: " << this->Durability() << "/" << this->Type().Durability() << " GP: " << this->Price(SELL);
+		description << this->Name() << "(+" << this->Type().Value() << ") Use:" << this->Durability() << "/" << this->Type().Durability() << " GP:" << this->Price(SELL);
 	Console::quickLog(description.str().c_str());
 }
 
@@ -148,9 +146,9 @@ void Pickup::describe(action Action)
 	ostringstream description;
 	//description << this->Name() << " Price: " << this->Price();
 	if (Action == SELL)
-		description << "SELL:" << this->Name() << " (+" << this->Type().Value() << ") Use: " << this->Durability() << "/" << this->Type().Durability() << " GP: " << this->Price(SELL);
+		description << "SELL:" << this->Name() << "(+" << this->Type().Value() << ") Use:" << this->Durability() << "/" << this->Type().Durability() << " GP:" << this->Price(SELL);
 	else
-		description << "BUY:" << this->Name() << " (+" << this->Type().Value() << ") Use: " << this->Durability() << "/" << this->Type().Durability() << " GP: " << this->Price(BUY);
+		description << "BUY:" << this->Name() << "(+" << this->Type().Value() << ") Use:" << this->Durability() << "/" << this->Type().Durability() << " GP:" << this->Price(BUY);
 	Console::quickLog(description.str().c_str());
 }
 

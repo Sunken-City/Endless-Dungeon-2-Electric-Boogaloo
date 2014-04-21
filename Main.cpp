@@ -23,6 +23,8 @@ bool newGameHover = false;
 bool loadGameHover = false;
 bool onMenu = true;
 bool loaded = false;
+bool error = false;
+char** errorMessage = new char*; 
 
 cint RIGHT = cint(1,0);
 cint LEFT = cint(-1,0);
@@ -48,6 +50,7 @@ void save()
 	write.IO<int>(Settings::worldx);
 	write.IO<int>(Settings::worldy);
 
+	gameWorld.setPlayer(&plr);
 	gameWorld.serialize(write);
 
 	write.close();
@@ -193,16 +196,22 @@ void menuUpdate()
 				load();
 				onMenu = false;
 			}
-			catch(InvalidHeaderException& error)
+			catch(InvalidHeaderException& e)
 			{
-				Console::menuPrint("INVALID HEADER", (tl_xres() - 15) / 2, (tl_yres() / 2) + 6, 1, 0xFF0000FF);
-				Console::menuPrint("FILE NOT LOADED", (tl_xres() - 15) / 2, (tl_yres() / 2) + 7, 1, 0xFF0000FF);
+				*errorMessage = "INVALID HEADER";
+				error = true;
 				onMenu = true;
 			}
-			catch(InvalidVersionException& error)
+			catch(InvalidVersionException& e)
 			{
-				Console::menuPrint("INVALID VERSION", (tl_xres() - 15) / 2, (tl_yres() / 2) + 6, 1, 0xFF0000FF);
-				Console::menuPrint("FILE NOT LOADED", (tl_xres() - 15) / 2, (tl_yres() / 2) + 7, 1, 0xFF0000FF);
+				*errorMessage = "INVALID VERSION";
+				error = true;
+				onMenu = true;
+			}
+			catch(TruncatedFileException& e)
+			{
+				*errorMessage = "TRUNCATED FILE";
+				error = true;
 				onMenu = true;
 			}
 		}
@@ -242,7 +251,12 @@ void menuDraw()
 		}
 	}
 	Console::menuPrint(*newGame, (tl_xres() - 9) / 2, (tl_yres() / 2) + 2, 1, 0xDEDEDEFF);
-	Console::menuPrint(*loadGame, (tl_xres() - 9) / 2, (tl_yres() / 2) + 4, 1, 0xDEDEDEFF);
+	Console::menuPrint(*loadGame, (tl_xres() - 9) / 2, (tl_yres() / 2) + 4, 1, 0xDEDEDEFF);	
+	if (error)
+	{
+		Console::menuPrint(*errorMessage, (tl_xres() - 15) / 2, (tl_yres() / 2) + 6, 1, 0xFF0000FF);
+		Console::menuPrint("FILE NOT LOADED", (tl_xres() - 15) / 2, (tl_yres() / 2) + 7, 1, 0xFF0000FF);
+	}
 }
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) 
@@ -250,6 +264,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	_CrtSetDbgFlag(_CRTDBG_CHECK_ALWAYS_DF);
 	tl_init("Endless Dungeon 2: Electric Boogaloo", 800, 600, "tiles", 32, 3);
 
+	*errorMessage = "";
 	while (onMenu)
 	{
 		tl_framestart(0);
@@ -259,9 +274,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	//Now on to the game
 	if (!loaded)
+	{
 		gameWorld.initialize();
-	plr = Player(gameWorld.getStart());
-	plr.move(gameWorld.getStart(), gameWorld.getCell(plr.Pos().X(), plr.Pos().Y()));
+		plr = Player(gameWorld.getStart());
+		plr.move(gameWorld.getStart(), gameWorld.getCell(plr.Pos().X(), plr.Pos().Y()));
+		gameWorld.setPlayer(&plr);
+	}
+	else
+	{
+		plr = *gameWorld.getPlayer();
+	}
 	gameWorld.updateVisibility(&plr);
 
 	while(true)

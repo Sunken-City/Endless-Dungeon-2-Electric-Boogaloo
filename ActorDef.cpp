@@ -42,12 +42,24 @@ ActorDef::~ActorDef()
 
 void ActorDef::serialize(Serializer write)
 {
-
+	write.IO<int>(this->tileNum);
+	write.IO<int>(this->baseHP);
+	this->hitDice.serialize(write);
+	this->attack.serialize(write);
+	this->defence.serialize(write);
+	write.IO<string>(this->name);
 }
 
-void ActorDef::reconstruct(Serializer read)
+ActorDef* ActorDef::reconstruct(Serializer read)
 {
-
+	ActorDef* a = new ActorDef();
+	read.IO<int>(a->tileNum);
+	read.IO<int>(a->baseHP);
+	a->hitDice.reconstruct(read);
+	a->attack.reconstruct(read);
+	a->defence.reconstruct(read);
+	read.IO<string>(a->name);
+	return a;
 }
 
 int ActorDef::Tile()

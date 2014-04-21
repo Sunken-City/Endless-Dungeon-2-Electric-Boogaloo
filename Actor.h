@@ -16,10 +16,11 @@ class Actor : public Serializeable
 {
 public:
 	void serialize(Serializer write);
-	void reconstruct(Serializer read);
+	static Actor* reconstruct(Serializer read);
 
 	bool active;
 	bool mute;
+	bool isPlayer;
 	Cell* homeTile;
 	status Status;
 
@@ -39,6 +40,7 @@ public:
 	string Name();
 	bool move(cint newPosition, Cell* newCell);
 	Cell* getCell();
+	void setCell(Cell* newCell);
 	virtual void die();
 	virtual void update();
 	void AI(Actor* player);

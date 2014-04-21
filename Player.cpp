@@ -6,11 +6,13 @@ int Player::experience = 0;
 
 Player::Player()
 {
-
+	this->isPlayer = true;
+	this->mute = true;
 }
 
 Player::Player(cint startingPosition)
 {
+	this->isPlayer = true;
 	this->type = new ActorDef(0x0AC, "Pico", 100, Dice(1,3), Dice(1,2));
 	this->position = startingPosition;
 	this->hP = type->HP();
@@ -36,12 +38,57 @@ Player::~Player()
 
 void Player::serialize(Serializer write)
 {
-
+	write.IO<bool>(this->isPlayer);
+	this->position.serialize(write);
+	this->type->serialize(write);
+	write.IO<int>(this->stamina);
+	write.IO<int>(this->maxStamina);
+	write.IO<int>(this->hP);
+	write.IO<int>(this->mana);
+	write.IO<int>(this->maxMana);
+	write.IO<int>(this->level);
+	write.IO<int>(this->gold);
+	write.IO<int>(experience);
+	write.IO<status>(this->Status);
+	int inventorySize = inventory.size();
+	write.IO<int>(inventorySize);
+	for (vector<Pickup*>::iterator itr = inventory.begin(); itr != inventory.end(); itr++)
+	{
+		(*itr)->serialize(write);
+	}
 }
 
-void Player::reconstruct(Serializer read)
+Player* Player::reconstruct(Serializer read)
 {
-
+	Player* p = new Player();
+	read.IO<bool>(p->isPlayer);
+	p->position.reconstruct(read);
+	p->type = ActorDef::reconstruct(read);
+	p->tileNum = p->type->Tile();
+	read.IO<int>(p->stamina);
+	read.IO<int>(p->maxStamina);
+	read.IO<int>(p->hP);
+	read.IO<int>(p->mana);
+	read.IO<int>(p->maxMana);
+	read.IO<int>(p->level);
+	read.IO<int>(p->gold);
+	read.IO<int>(experience);
+	read.IO<status>(p->Status);
+	int inventorySize;
+	read.IO<int>(inventorySize);
+	p->armor = 0;
+	p->shield = 0;
+	p->sword = 0;
+	for (int i = 0; i < inventorySize; i++)
+	{
+		Pickup* item = Pickup::reconstruct(read);
+		p->inventory.push_back(item);
+		if(item->equipped)
+		{
+			p->equip(item);
+		}
+	}
+	return p;
 }
 
 void Player::die()

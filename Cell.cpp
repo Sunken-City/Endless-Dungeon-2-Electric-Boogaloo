@@ -51,13 +51,20 @@ void Cell::serialize(Serializer write)
 	this->position.serialize(write);
 	write.IO<tileType>(this->type);
 	write.IO<bool>(this->isOccupied);
-	/*if (this->actor == 0)
+	if (this->actor == 0)
 		write.IO<int>(null);
 	else
 	{
-		write.IO<int>(notNull);
-		this->actor->serialize(write);
-	}*/
+		if(this->actor->isPlayer)
+		{
+			write.IO<int>(null);
+		}
+		else
+		{
+			write.IO<int>(notNull);
+			this->actor->serialize(write);
+		}
+	}
 	if (this->pickup == 0)
 		write.IO<int>(null);
 	else
@@ -76,12 +83,15 @@ Cell* Cell::reconstruct(Serializer read)
 	c->position.reconstruct(read);
 	read.IO<tileType>(c->type);
 	read.IO<bool>(c->isOccupied);
-	/*read.IO<int>(isNull);
+	read.IO<int>(isNull);
 	if (isNull == null)
-		this->actor = 0;
+		c->actor = 0;
 	else
-		this->actor->reconstruct(read);
-		*/
+	{
+		c->actor = Actor::reconstruct(read);
+		c->actor->setCell(c);
+		c->actor->homeTile = c;
+	}
 	read.IO<int>(isNull);
 	if (isNull == null)
 		c->pickup = 0;
@@ -90,7 +100,6 @@ Cell* Cell::reconstruct(Serializer read)
 		c->pickup = Pickup::reconstruct(read);
 		c->pickup->currCell = c;
 	}
-	c->actor = 0;
 	read.IO<int>(c->visibility);
 	return c;
 }

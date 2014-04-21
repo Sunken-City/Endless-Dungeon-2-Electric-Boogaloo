@@ -21,13 +21,3 @@ class InvalidVersionException : public std::runtime_error {
 public:
   InvalidVersionException() : std::runtime_error("InvalidVersionException") { }
 };
-
-class TruncatedFileException : public std::runtime_error {
-public:
-  TruncatedFileException() : std::runtime_error("TruncatedFileException") { }
-};
-
-class ExtendedFileException : public std::runtime_error {
-public:
-  ExtendedFileException() : std::runtime_error("ExtendedFileException") { }
-};

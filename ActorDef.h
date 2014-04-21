@@ -9,7 +9,7 @@ class ActorDef : public Serializeable
 {
 public:
 	void serialize(Serializer write);
-	void reconstruct(Serializer read);
+	static ActorDef* reconstruct(Serializer read);
 
 	ActorDef();
 	ActorDef(int difficulty, int bias);

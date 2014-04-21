@@ -5,19 +5,20 @@
 
 Actor::Actor()
 {
-
+	this->isPlayer = false;
+	this->active = true;
+	this->mute = false;
 }
 
 Actor::Actor(ActorDef* actorType, cint position, Cell* currentCell)
 {
+	this->isPlayer = false;
 	type = actorType;
 	this->hP = type->HP();
 	this->position = position;
 	this->tileNum = type->Tile();
 	this->currCell = currentCell;
 	this->homeTile = new Cell(currentCell->Pos().X(), currentCell->Pos().Y());
-	this->active = true;
-	this->mute = false;
 	this->maxStamina = 10;
 	this->stamina = this->maxStamina;
 	this->Status = NORMAL;
@@ -30,12 +31,27 @@ Actor::~Actor()
 
 void Actor::serialize(Serializer write)
 {
-
+	write.IO<bool>(this->isPlayer);
+	this->position.serialize(write);
+	this->type->serialize(write);
+	write.IO<int>(this->stamina);
+	write.IO<int>(this->maxStamina);
+	write.IO<int>(this->hP);
+	write.IO<status>(this->Status);
 }
 
-void Actor::reconstruct(Serializer read)
+Actor* Actor::reconstruct(Serializer read)
 {
-
+	Actor* a = new Actor();
+	read.IO<bool>(a->isPlayer);
+	a->position.reconstruct(read);
+	a->type = ActorDef::reconstruct(read);
+	a->tileNum = a->type->Tile();
+	read.IO<int>(a->stamina);
+	read.IO<int>(a->maxStamina);
+	read.IO<int>(a->hP);
+	read.IO<status>(a->Status);
+	return a;
 }
 
 int Actor::HP()
@@ -133,6 +149,11 @@ bool Actor::move(cint newPosition, Cell* newCell)
 Cell* Actor::getCell()
 {
 	return this->currCell;
+}
+
+void Actor::setCell(Cell* newCell)
+{
+	this->currCell = newCell;
 }
 
 void Actor::die()

@@ -9,7 +9,7 @@ class Player : public Actor
 {
 public:
 	void serialize(Serializer write);
-	void reconstruct(Serializer read);
+	static Player* reconstruct(Serializer read);
 
 	vector<Pickup*> inventory;
 	int gold;

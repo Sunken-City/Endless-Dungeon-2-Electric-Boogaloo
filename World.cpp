@@ -56,6 +56,7 @@ void World::serialize(Serializer write)
 	{
 		(*itr)->serialize(write);
 	}
+	this->plr->serialize(write);
 }
 
 void World::reconstruct(Serializer read)
@@ -90,8 +91,13 @@ void World::reconstruct(Serializer read)
 	{
 		this->inventory.push_back(Pickup::reconstruct(read));
 	}
-	actorInit();
-	this->Shop = findShop();
+	this->plr = Player::reconstruct(read);
+	cint pos = this->plr->Pos();
+	map[pos.X()][pos.Y()]->setActor(this->plr);
+	this->plr->setCell(map[pos.X()][pos.Y()]);
+
+	findActors();
+	this->Shop = findShop();	
 }
 
 
@@ -524,4 +530,30 @@ void World::findLinePath(int radius, int index, cint start, cint end)
 			netChange = netChange + smallDirection;
 		}
 	}
+}
+
+void World::findActors()
+{
+	Cell* c;
+	for (int i = 0; i < Settings::worldx; i++)
+	{
+		for (int j = 0; j < Settings::worldy; j++)
+		{
+			c = map[i][j];
+			if(c->hasActor() && !c->getActor()->isPlayer)
+			{
+				monsters.push_back(c->getActor());
+			}
+		}
+	}
+}
+
+Player* World::getPlayer()
+{
+	return plr;
+}
+
+void World::setPlayer(Player* plr)
+{
+	this->plr = plr;
 }
