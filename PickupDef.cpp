@@ -96,20 +96,21 @@ void PickupDef::serialize(Serializer write)
 	write.IO<int>(this->tileNum);
 	write.IO<int>(this->effectValue);
 	write.IO<int>(this->durability);
-	write.IO<char*>(this->name);
+	write.IO<string>(this->name);
 	write.IO<behavior>(this->type);
 	write.IO<int>(this->castCost);
 }
 
-PickupDef PickupDef::reconstruct(Serializer read)
+PickupDef* PickupDef::reconstruct(Serializer read)
 {
-	PickupDef p = PickupDef();
-	read.IO<int>(p.tileNum);
-	read.IO<int>(p.effectValue);
-	read.IO<int>(p.durability);
-	read.IO<char*>(p.name);
-	read.IO<behavior>(p.type);
-	read.IO<int>(p.castCost);
+	PickupDef* p = new PickupDef();
+	read.IO<int>(p->tileNum);
+	read.IO<int>(p->effectValue);
+	read.IO<int>(p->durability);
+	read.IO<string>(p->name);
+	read.IO<behavior>(p->type);
+	read.IO<int>(p->castCost);
+	p->use = behaviors[p->type];
 	return p;
 }
 
@@ -119,7 +120,7 @@ int PickupDef::Tile()
 	return this->tileNum;
 }
 
-char* PickupDef::Name()
+string PickupDef::Name()
 {
 	return this->name;
 }

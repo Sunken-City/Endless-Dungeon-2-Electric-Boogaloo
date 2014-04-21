@@ -39,7 +39,7 @@ void Pickup::serialize(Serializer write)
 	write.IO<int>(this->tileNum);
 	this->position.serialize(write);
 	this->type.serialize(write);
-	write.IO<string>(this->name);
+	//write.IO<char*>(this->name);
 	write.IO<int>(this->durability);
 	write.IO<int>(this->inventoryPosition);
 	write.IO<bool>(this->equipped);
@@ -50,11 +50,13 @@ Pickup* Pickup::reconstruct(Serializer read)
 	Pickup* p = new Pickup();
 	read.IO<int>(p->tileNum);
 	p->position.reconstruct(read);
-	p->type = PickupDef::reconstruct(read);
-	read.IO<string>(p->name);
+	p->type = *PickupDef::reconstruct(read);
+	//read.IO<char*>(p->name);
 	read.IO<int>(p->durability);
 	read.IO<int>(p->inventoryPosition);
 	read.IO<bool>(p->equipped);
+	p->name = p->type.Name();
+	p->use = p->type.use;
 	return p;
 }
 
