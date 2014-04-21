@@ -82,6 +82,7 @@
     <ClCompile Include="Pickup.cpp" />
     <ClCompile Include="PickupDef.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Serializeable.cpp" />
     <ClCompile Include="Serializer.cpp" />
     <ClCompile Include="Shop.cpp" />
     <ClCompile Include="Sound.cpp" />

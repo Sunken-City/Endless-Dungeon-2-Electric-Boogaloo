@@ -5,7 +5,7 @@
 
 class Pickup;
 
-class Player : public Actor, public Serializeable
+class Player : public Actor
 {
 public:
 	void serialize(Serializer write);

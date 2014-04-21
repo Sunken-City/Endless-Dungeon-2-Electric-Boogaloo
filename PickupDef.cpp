@@ -28,6 +28,7 @@ PickupDef::PickupDef(int difficulty, behavior itemType)
 	difficulty += offset;
 	this->use = behaviors[itemType];
 	this->type = itemType;
+	this->castCost = 5;
 
 	if (itemType == GP)
 	{
@@ -74,7 +75,7 @@ PickupDef::PickupDef(int difficulty, behavior itemType)
 	
 }
 
-PickupDef::PickupDef(int tileNumber, string name, int durability, int value, function<void(Player*, Pickup*)> u, behavior itemType)
+PickupDef::PickupDef(int tileNumber, char* name, int durability, int value, function<void(Player*, Pickup*)> u, behavior itemType)
 {
 	this->tileNum = tileNumber;
 	this->name = name;
@@ -92,12 +93,24 @@ PickupDef::~PickupDef()
 
 void PickupDef::serialize(Serializer write)
 {
-
+	write.IO<int>(this->tileNum);
+	write.IO<int>(this->effectValue);
+	write.IO<int>(this->durability);
+	write.IO<char*>(this->name);
+	write.IO<behavior>(this->type);
+	write.IO<int>(this->castCost);
 }
 
-void PickupDef::reconstruct(Serializer read)
+PickupDef PickupDef::reconstruct(Serializer read)
 {
-
+	PickupDef p = PickupDef();
+	read.IO<int>(p.tileNum);
+	read.IO<int>(p.effectValue);
+	read.IO<int>(p.durability);
+	read.IO<char*>(p.name);
+	read.IO<behavior>(p.type);
+	read.IO<int>(p.castCost);
+	return p;
 }
 
 
@@ -106,7 +119,7 @@ int PickupDef::Tile()
 	return this->tileNum;
 }
 
-string PickupDef::Name()
+char* PickupDef::Name()
 {
 	return this->name;
 }

@@ -6,8 +6,8 @@
 class Serializeable
 {
 public:
-	static const int null = 0;
-	static const int notNull = 1;
+	static int null;
+	static int notNull;
 	virtual void serialize(Serializer write) = 0;
 	//virtual void reconstruct(Serializer read) = 0;
 };

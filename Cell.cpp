@@ -52,19 +52,19 @@ void Cell::serialize(Serializer write)
 	write.IO<tileType>(this->type);
 	write.IO<bool>(this->isOccupied);
 	/*if (this->actor == 0)
-		write.IO<const int>(null);
+		write.IO<int>(null);
 	else
 	{
-		write.IO<const int>(notNull);
+		write.IO<int>(notNull);
 		this->actor->serialize(write);
-	}
+	}*/
 	if (this->pickup == 0)
-		write.IO<const int>(null);
+		write.IO<int>(null);
 	else
 	{
-		write.IO<const int>(notNull);
+		write.IO<int>(notNull);
 		this->pickup->serialize(write);
-	}*/
+	}
 	write.IO<int>(this->visibility);
 }
 
@@ -81,16 +81,16 @@ Cell* Cell::reconstruct(Serializer read)
 		this->actor = 0;
 	else
 		this->actor->reconstruct(read);
+		*/
 	read.IO<int>(isNull);
 	if (isNull == null)
-		this->pickup = 0;
+		c->pickup = 0;
 	else
 	{
-		this->pickup->reconstruct(read);
-		this->pickup->currCell = this;
-	}*/
+		c->pickup = Pickup::reconstruct(read);
+		c->pickup->currCell = c;
+	}
 	c->actor = 0;
-	c->pickup = 0;
 	read.IO<int>(c->visibility);
 	return c;
 }

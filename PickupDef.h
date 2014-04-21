@@ -16,7 +16,7 @@ class PickupDef : public Serializeable
 {
 public:
 	void serialize(Serializer write);
-	void reconstruct(Serializer read);
+	static PickupDef reconstruct(Serializer read);
 
 	typedef map<behavior, function<void(Player*, Pickup*)>> funcMap;
 	static funcMap behaviors;
@@ -24,10 +24,10 @@ public:
 
 	PickupDef();
 	PickupDef(int difficulty, behavior itemType);
-	PickupDef(int tileNumber, string name, int durability, int value, function<void(Player *, Pickup *)> u, behavior itemType);
+	PickupDef(int tileNumber, char* name, int durability, int value, function<void(Player *, Pickup *)> u, behavior itemType);
 	~PickupDef();
 	int Tile();
-	string Name();
+	char* Name();
 	int Value();
 	int Durability();
 	int ItemType();
@@ -38,7 +38,7 @@ private:
 	int tileNum;
 	int effectValue;
 	int durability;
-	string name;
+	char* name;
 	behavior type;
 	int castCost;
 

@@ -50,7 +50,7 @@ Pickup* Pickup::reconstruct(Serializer read)
 	Pickup* p = new Pickup();
 	read.IO<int>(p->tileNum);
 	p->position.reconstruct(read);
-	p->type.reconstruct(read);
+	p->type = PickupDef::reconstruct(read);
 	read.IO<string>(p->name);
 	read.IO<int>(p->durability);
 	read.IO<int>(p->inventoryPosition);
