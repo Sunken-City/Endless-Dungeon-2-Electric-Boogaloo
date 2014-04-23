@@ -36,13 +36,9 @@ void World::serialize(Serializer write)
 	write.IO<int>(this->difficultyLevel);
 	write.IO<int>(this->viewRange);
 	write.IO<TileSet>(*(this->style));
-	for (int i = 0; i < Settings::worldx; i++)
-	{
-		for (int j = 0; j < Settings::worldy; j++)
-		{
-			map[i][j]->serialize(write);
-		}
-	}
+	
+	iterateOverWorld([&](cint* pos){getCell(*pos)->serialize(write);});
+
 	for (vector<vector<cint>>::iterator list = paths.begin(); list != paths.end(); list++)
 	{
 		for (vector<cint>::iterator itr = (*list).begin(); itr != (*list).end(); itr++)
@@ -50,12 +46,7 @@ void World::serialize(Serializer write)
 			itr->serialize(write);
 		}
 	}
-	int inventorySize = inventory.size();
-	write.IO<int>(inventorySize);
-	for (vector<Pickup*>::iterator itr = inventory.begin(); itr != inventory.end(); itr++)
-	{
-		(*itr)->serialize(write);
-	}
+	Utilities::serializeInventory(&inventory, write);
 	this->plr->serialize(write);
 }
 
@@ -65,11 +56,7 @@ void World::reconstruct(Serializer read)
 	read.IO<int>(this->difficultyLevel);
 	read.IO<int>(this->viewRange);
 	read.IO<TileSet>(*(this->style));
-	map.resize(Settings::worldx); 
-	for (int i = 0; i < Settings::worldy; i++)
-	{
-		map[i].resize(Settings::worldx);
-	}
+	resizeMap();
 
 	for (int i = 0; i < Settings::worldx; i++)
 	{
@@ -78,6 +65,7 @@ void World::reconstruct(Serializer read)
 			map[i][j] = Cell::reconstruct(read);
 		}
 	}
+
 	for (vector<vector<cint>>::iterator list = paths.begin(); list != paths.end(); list++)
 	{
 		for (vector<cint>::iterator itr = (*list).begin(); itr != (*list).end(); itr++)
@@ -100,6 +88,19 @@ void World::reconstruct(Serializer read)
 	this->Shop = findShop();	
 }
 
+void World::iterateOverWorld(function<void(cint*)> f)
+{
+	cint currPos;
+	for (int i = 0; i < Settings::worldx; i++)
+	{
+		currPos.X(i);
+		for (int j = 0; j < Settings::worldy; j++)
+		{
+			currPos.Y(j);
+			f(&currPos);
+		}
+	}
+}
 
 void World::actorInit()
 {
@@ -123,8 +124,6 @@ void World::pickupInit()
 		pickups.push_back(new PickupDef(difficultyLevel, ARMOR));
 		pickups.push_back(new PickupDef(difficultyLevel, SPELL));
 	}
-	//pickups.push_back(new PickupDef(0x367, "Scroll of Healing", 5, 100, [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), 0); Sound::play("grandHeal.sfs");}, SPELL));
-	//pickups.push_back(new PickupDef(0x388, "Alchemy", 1, 100, [&](Player* plr, Pickup* item){plr->gold *= 2; Sound::play("oceanWave.sfs");}, SPELL));
 }
 
 void World::styleInit()
@@ -145,7 +144,7 @@ void World::styleInit()
 	this->style = styles.at(rand() % (styles.size()));
 }
 
-void World::worldGen()
+void World::resizeMap()
 {
 	//Start off by resizing to the height of the game world
 	map.resize(Settings::worldx); 
@@ -154,7 +153,11 @@ void World::worldGen()
 	{
 		map[i].resize(Settings::worldx);
 	}
+}
 
+void World::worldGen()
+{
+	resizeMap();
 	//Initialize the world
 	for (int i = 0; i < Settings::worldx; i++)
 	{
@@ -421,18 +424,14 @@ void World::initShop()
 	} 
 	//I have to do the for loop multiple times so that the order is correct.
 	for (int i = 0; i < 200; i+=50)
+	{
 		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, HEALTH)));
-	for (int i = 0; i < 200; i+=50)
 		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, WEAPON)));
-	for (int i = 0; i < 200; i+=50)
 		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, SHIELD)));
-	for (int i = 0; i < 200; i+=50)
 		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, ARMOR)));
-	for (int i = 0; i < 200; i+=50)
 		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, SPELL)));
-	//this->inventory.push_back(new Pickup(PickupDef(0x367, "Scroll of Healing", 5, 100, [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), 0); Sound::play("grandHeal.sfs");}, SPELL)));
-	//this->inventory.push_back(new Pickup(PickupDef(0x388, "Alchemy", 1, 100, [&](Player* plr, Pickup* item){plr->gold *= 2; Sound::play("oceanWave.sfs");}, SPELL)));
-
+	}
+	Utilities::sortInventory(&this->inventory);
 }
 
 void World::generateVisibility()

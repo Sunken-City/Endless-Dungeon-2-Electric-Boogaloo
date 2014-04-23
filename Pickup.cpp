@@ -2,24 +2,8 @@
 #include "Pickup.h"
 #include "Cell.h"
 
-
 Pickup::Pickup()
-{
-
-}
-
-Pickup::Pickup(PickupDef pickupType)
-{
-	this->type = pickupType;
-	this->position = cint(0,0);
-	this->tileNum = type.Tile();
-	this->currCell = 0;
-	this->name = type.Name();
-	this->use = type.use;
-	this->durability = type.Durability();
-	this->equipped = false;
-	this->inventoryPosition = 0;
-}
+{}
 
 Pickup::Pickup(PickupDef pickupType, cint position, Cell* currentCell)
 {
@@ -166,10 +150,4 @@ int Pickup::Price(action Action)
 		return (this->Price() * 2);
 	else
 		return (this->Price() / 2);
-}
-
-
-void Pickup::attackSurrounding (Player* plr, int damage, status Status)
-{
-	plr->Pos();
 }

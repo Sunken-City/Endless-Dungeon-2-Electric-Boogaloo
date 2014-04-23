@@ -3,6 +3,7 @@
 #include "ActorDef.h"
 #include "Console.h"
 #include "Sound.h"
+#include "Utilities.h"
 #include <string>
 #include <sstream>
 

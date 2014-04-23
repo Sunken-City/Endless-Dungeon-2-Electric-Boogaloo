@@ -23,9 +23,9 @@ public:
 	Cell* currCell;
 
 	Pickup();
-	Pickup(PickupDef pickupType);
-	Pickup(PickupDef pickupType, cint position, Cell* currentCell);
+	Pickup(PickupDef pickupType, cint position = cint(0,0), Cell* currentCell = 0);
 	~Pickup();
+
 	cint Pos();
 	void Pos(cint newPosition);
 	int Tile();
@@ -40,7 +40,6 @@ public:
 	void describe(action);
 	int Price();
 	int Price(action);
-	void attackSurrounding (Player* plr, int damage, status Status);
 
 protected:
 	int tileNum;

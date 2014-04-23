@@ -38,24 +38,13 @@ Player::~Player()
 
 void Player::serialize(Serializer write)
 {
-	write.IO<bool>(this->isPlayer);
-	this->position.serialize(write);
-	this->type->serialize(write);
-	write.IO<int>(this->stamina);
-	write.IO<int>(this->maxStamina);
-	write.IO<int>(this->hP);
+	Actor::serialize(write);
 	write.IO<int>(this->mana);
 	write.IO<int>(this->maxMana);
 	write.IO<int>(this->level);
 	write.IO<int>(this->gold);
 	write.IO<int>(experience);
-	write.IO<status>(this->Status);
-	int inventorySize = inventory.size();
-	write.IO<int>(inventorySize);
-	for (vector<Pickup*>::iterator itr = inventory.begin(); itr != inventory.end(); itr++)
-	{
-		(*itr)->serialize(write);
-	}
+	Utilities::serializeInventory(&inventory, write);
 }
 
 Player* Player::reconstruct(Serializer read)
@@ -68,12 +57,12 @@ Player* Player::reconstruct(Serializer read)
 	read.IO<int>(p->stamina);
 	read.IO<int>(p->maxStamina);
 	read.IO<int>(p->hP);
+	read.IO<status>(p->Status);
 	read.IO<int>(p->mana);
 	read.IO<int>(p->maxMana);
 	read.IO<int>(p->level);
 	read.IO<int>(p->gold);
 	read.IO<int>(experience);
-	read.IO<status>(p->Status);
 	int inventorySize;
 	read.IO<int>(inventorySize);
 	p->armor = 0;
@@ -122,7 +111,10 @@ void Player::update()
 			return;
 		}
 		else
+		{
 			this->inventory.push_back(item);
+			Utilities::sortInventory(&this->inventory);
+		}
 		this->currCell->setPickup(0);
 		item->pickedUp();
 	}
@@ -206,9 +198,11 @@ void Player::useItem(cint mousePos)
 void Player::sellItem(cint mousePos, vector<Pickup*>* shopInventory)
 {
 	Pickup* item = 0;
-	if ((mousePos.X() > tl_xres() - 7) && (mousePos.Y() > 2))
+	int mx = mousePos.X();
+	int my = mousePos.Y();
+	if ((mx > tl_xres() - 7) && (my > 2))
 	{
-		int inventoryPos = (((mousePos.Y() - 3) * 6) + abs((tl_xres() - mousePos.X() - 6)));
+		int inventoryPos = (((my - 3) * 6) + abs((tl_xres() - mx - 6)));
 		if (this->inventory.size() > inventoryPos)
 		{
 			item = this->inventory.at(inventoryPos);
@@ -216,7 +210,7 @@ void Player::sellItem(cint mousePos, vector<Pickup*>* shopInventory)
 				this->equip(item); //This will actually unequip it, despite what the method call looks like.
 			shopInventory->push_back(item);
 			this->hollaHollaGetDolla(item->Price(SELL));
-			breakItem(item);
+			breakItem(item); //Sneaky way to remove from inventory. Literally the same call.
 			ostringstream message;
 			message << "You sold your " << item->Name() << " for " << item->Price(SELL) << "GP";
 			Sound::play("gold.sfs");
@@ -253,7 +247,6 @@ void Player::equip(Pickup* item)
 		(*slot)->equipped = false;
 		*slot = item;
 		item->equipped = true;
-		
 	}
 	Console::log(message.str().c_str(), 0x35C0CDFF);
 	Sound::play("equip.sfs");
@@ -365,17 +358,12 @@ void Player::gainExperience(int exp)
 }
 
 void Player::heal(int hp, int mana)
-	{
-		ostringstream message;
-		ostringstream manaMessage;
-		this->hP += hp;
-		if (this->hP > type->HP())
-			this->hP = type->HP();
-		message << this->Name() << " healed " << hp << " HP!";
-		Console::log(message.str().c_str(), 0x00FF00FF);
-		this->mana += mana;
-		if (this->mana > maxMana)
-			this->mana = maxMana;
-		manaMessage << this->Name() << " restored " << mana << " Mana!";
-		Console::log(manaMessage.str().c_str(), 0x0099FFFF);
-	}
+{
+	ostringstream manaMessage;
+	Actor::heal(hp);
+	this->mana += mana;
+	if (this->mana > maxMana)
+		this->mana = maxMana;
+	manaMessage << this->Name() << " restored " << mana << " Mana!";
+	Console::log(manaMessage.str().c_str(), 0x0099FFFF);
+}

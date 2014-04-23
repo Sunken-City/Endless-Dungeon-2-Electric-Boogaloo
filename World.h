@@ -1,10 +1,5 @@
 #pragma once
 
-#include <cstdlib>
-#include <vector>
-#include <ctime>
-#include <cmath>
-#include <algorithm>
 #include "Cell.h"
 #include "Coord.h"
 #include "Settings.h"
@@ -12,6 +7,13 @@
 #include "Player.h"
 #include "TileSet.h"
 #include "Sound.h"
+#include "Utilities.h"
+#include <cstdlib>
+#include <vector>
+#include <ctime>
+#include <cmath>
+#include <algorithm>
+
 
 using namespace std;
 
@@ -38,7 +40,10 @@ public:
 	void pickupInit();
 	void styleInit();
 	void worldGen();
+	void resizeMap();
 	void initialize();
+
+	void iterateOverWorld(function<void(cint*)> f);
 
 	int getTile(int x, int y);
 	Cell* getCell(cint location);

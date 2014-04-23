@@ -1,7 +1,6 @@
 #include "Actor.h"
+#include "Pickup.h"
 #include "Cell.h"
-
-
 
 Actor::Actor()
 {

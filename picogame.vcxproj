@@ -87,6 +87,7 @@
     <ClCompile Include="Shop.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="TileSet.cpp" />
+    <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +112,7 @@
     <ClInclude Include="Shop.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="TileSet.h" />
+    <ClInclude Include="Utilities.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
