@@ -44,6 +44,7 @@ public:
 	void initialize();
 
 	void iterateOverWorld(function<void(cint*)> f);
+	cint iterateOverWorldForPosition(function<void(cint**, cint*)> f);
 
 	int getTile(int x, int y);
 	Cell* getCell(cint location);

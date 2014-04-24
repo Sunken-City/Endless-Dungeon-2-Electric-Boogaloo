@@ -102,6 +102,23 @@ void World::iterateOverWorld(function<void(cint*)> f)
 	}
 }
 
+cint World::iterateOverWorldForPosition(function<void(cint**, cint*)> f)
+{
+	cint currPos;
+	cint* returnVal = 0;
+	for (int i = 0; i < Settings::worldx; i++)
+	{
+		currPos.X(i);
+		for (int j = 0; j < Settings::worldy; j++)
+		{
+			currPos.Y(j);
+			f(&returnVal, &currPos);
+			if(returnVal != 0)
+				return *(returnVal);
+		}
+	}
+}
+
 void World::actorInit()
 {
 	srand(time(0));
@@ -196,9 +213,8 @@ void World::worldGen()
 	vector<int> zones;
 	int numFilled;
 	currZone = 1;
-	for (int i = 0; i < Settings::worldx; i++)
-	{
-		for_each (map[i].begin(), map[i].end(), [&](Cell *c){
+	iterateOverWorld([&](cint* pos){
+			Cell* c = getCell(*pos);
 			numFilled = floodFill(c);
 			if (numFilled != 0)
 			{
@@ -206,8 +222,6 @@ void World::worldGen()
 				currZone++;
 			}
 		});
-	}
-
 	//Determine the largest zone of the zones we have.
 	int max = 0;
 	int biggestZone;
@@ -222,48 +236,44 @@ void World::worldGen()
 	});
 
 	//Replace all other zones with wall tiles.
-	for (int i = 0; i < Settings::worldx; i++)
-	{
-		for_each (map[i].begin(), map[i].end(), [&](Cell *c){
-			if(c->zone != biggestZone)
+	iterateOverWorld([&](cint* pos){
+		Cell* c = getCell(*pos);
+		if(c->zone != biggestZone)
+		{
+			cint currPos = c->Pos();
+			if (getCell(currPos.Next(0,-1))->zone == biggestZone ||
+				getCell(currPos.Next(0,1))->zone == biggestZone ||
+				getCell(currPos.Next(-1,0))->zone == biggestZone ||
+				getCell(currPos.Next(1,0))->zone == biggestZone)
 			{
-				cint currPos = c->Pos();
-				if (getCell(currPos.Next(0,-1))->zone == biggestZone ||
-					getCell(currPos.Next(0,1))->zone == biggestZone ||
-					getCell(currPos.Next(-1,0))->zone == biggestZone ||
-					getCell(currPos.Next(1,0))->zone == biggestZone)
-				{
-					c->setTile(style->wall, WALL);
-				}
-				else
-					c->setTile(0x000, UNUSED);
+				c->setTile(style->wall, WALL);
 			}
-		});
-	}
+			else
+				c->setTile(0x000, UNUSED);
+		}
+	});
 
 	setStairs();
 
 	//Populate world with monsters
-	for (int i = 0; i < Settings::worldx; i++)
-	{
-		for_each (map[i].begin(), map[i].end(), [&](Cell *c){
-			if(c->empty())
+	iterateOverWorld([&](cint* pos){
+		Cell* c = getCell(*pos);
+		if(c->empty())
+		{
+			if((rand() % 30 + 1) == 15)
 			{
-				if((rand() % 30 + 1) == 15)
+				if((rand() % 2 + 1) == 1)
 				{
-					if((rand() % 2 + 1) == 1)
-					{
-						monsters.push_back(new Actor(actors.at(rand() % (actors.size())), cint(c->Pos()), c));
-						c->setActor(monsters.at(monsters.size() - 1));
-					}
-					else
-					{
-						c->setPickup(new Pickup((*pickups.at(rand() % (pickups.size()))), cint(c->Pos()), c));
-					}
+					monsters.push_back(new Actor(actors.at(rand() % (actors.size())), cint(c->Pos()), c));
+					c->setActor(monsters.at(monsters.size() - 1));
+				}
+				else
+				{
+					c->setPickup(new Pickup((*pickups.at(rand() % (pickups.size()))), cint(c->Pos()), c));
 				}
 			}
-		});
-	}
+		}
+	});
 }
 
 int World::floodFill(Cell* tile)
@@ -309,15 +319,12 @@ int World::getTile(int x, int y)
 
 cint World::getStart()
 {
-	for (int i = 0; i < Settings::worldx; i++)
-	{
-		for (int j = 0; j < Settings::worldy; j++)
-		{
-			if(map[i][j]->getType() == FLOOR)
-				return cint(i,j);
-		}
-	}
-	return cint(0,0);
+	cint start = iterateOverWorldForPosition([&](cint** returnValue, cint* pos){
+		Cell* c = getCell(*pos);
+		if(c->getType() == FLOOR)
+				*returnValue = pos;
+	});
+	return start;
 }
 
 void World::update(Player* plr)
@@ -533,18 +540,13 @@ void World::findLinePath(int radius, int index, cint start, cint end)
 
 void World::findActors()
 {
-	Cell* c;
-	for (int i = 0; i < Settings::worldx; i++)
-	{
-		for (int j = 0; j < Settings::worldy; j++)
-		{
-			c = map[i][j];
+	iterateOverWorld([&](cint* pos){
+		Cell* c = getCell(*pos);
 			if(c->hasActor() && !c->getActor()->isPlayer)
 			{
 				monsters.push_back(c->getActor());
 			}
-		}
-	}
+		});
 }
 
 Player* World::getPlayer()
