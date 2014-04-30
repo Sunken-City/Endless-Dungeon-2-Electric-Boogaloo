@@ -149,5 +149,5 @@ int Pickup::Price(action Action)
 	if (Action == BUY)
 		return (this->Price() * 2);
 	else
-		return (this->Price() / 2);
+		return (this->Price());
 }
