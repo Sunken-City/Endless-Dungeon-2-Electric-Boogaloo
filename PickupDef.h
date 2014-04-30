@@ -19,6 +19,9 @@ public:
 	static PickupDef* reconstruct(Serializer read);
 
 	typedef map<behavior, function<void(Player*, Pickup*)>> funcMap;
+	typedef map<int, string> nameMap;
+	static nameMap itemNames;
+	static nameMap initItemNames();
 	static funcMap behaviors;
 	static funcMap initBehaviors();
 

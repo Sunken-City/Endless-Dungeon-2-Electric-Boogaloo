@@ -17,7 +17,7 @@ Actor::Actor(ActorDef* actorType, cint position, Cell* currentCell)
 	this->position = position;
 	this->tileNum = type->Tile();
 	this->currCell = currentCell;
-	this->homeTile = new Cell(currentCell->Pos().X(), currentCell->Pos().Y());
+	this->homeTile = currentCell->Pos();
 	this->maxStamina = 10;
 	this->stamina = this->maxStamina;
 	this->Status = NORMAL;
@@ -159,7 +159,7 @@ void Actor::die()
 {
 	if (this->currCell != 0)
 	{
-		Player::gainExperience(this->type->HP() * 10);
+		Player::gainExperience(this->type->HP());
 		string output = "You have slain the " + this->Name();
 		Sound::play("murder.sfs");
 		Console::log(output.c_str(), 0xFFFFFFFF);
@@ -191,9 +191,9 @@ void Actor::AI(Actor* player)
 		else
 		{
 			//If we've strayed from our home tile, go back towards it
-			if (cint::manhattan(this->homeTile->Pos(), this->position) > 4)
+			if (cint::manhattan(this->homeTile, this->position) > 4)
 			{
-				cint direction = cint::getDirection(this->homeTile->Pos(), this->position);
+				cint direction = cint::getDirection(this->homeTile, this->position);
 				this->move(this->Pos() + direction, *(this->currCell) + direction);
 			}
 			else
@@ -206,8 +206,7 @@ void Actor::AI(Actor* player)
 		}
 		if (this->stamina == 0)
 		{
-			delete(this->homeTile);
-			this->homeTile = new Cell(this->currCell->Pos().X(), this->currCell->Pos().Y());
+			this->homeTile = this->currCell->Pos();
 		}
 		if (cint::manhattan(player->Pos(), this->position) == 1)
 		{

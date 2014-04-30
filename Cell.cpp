@@ -90,7 +90,7 @@ Cell* Cell::reconstruct(Serializer read)
 	{
 		c->actor = Actor::reconstruct(read);
 		c->actor->setCell(c);
-		c->actor->homeTile = c;
+		c->actor->homeTile = c->position;
 	}
 	read.IO<int>(isNull);
 	if (isNull == null)

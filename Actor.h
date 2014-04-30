@@ -22,7 +22,7 @@ public:
 	bool active;
 	bool mute;
 	bool isPlayer;
-	Cell* homeTile;
+	cint homeTile;
 	status Status;
 
 	Actor();

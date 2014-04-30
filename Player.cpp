@@ -8,18 +8,19 @@ Player::Player()
 {
 	this->isPlayer = true;
 	this->mute = true;
+	this->active = true;
 }
 
 Player::Player(cint startingPosition)
 {
 	this->isPlayer = true;
-	this->type = new ActorDef(0x0AC, "Pico", 100, Dice(1,3), Dice(1,2));
+	this->type = new ActorDef(0x0AC, "Pico", 100, Dice(2,3), Dice(2,2));
 	this->position = startingPosition;
 	this->hP = type->HP();
 	this->position = position;
 	this->tileNum = type->Tile();
 	this->currCell = 0;
-	this->homeTile = new Cell(0,0);
+	this->homeTile = cint(0,0);
 	this->sword = 0;
 	this->shield = 0;
 	this->armor = 0;
@@ -29,6 +30,7 @@ Player::Player(cint startingPosition)
 	this->maxMana = 20;
 	this->level = 1;
 	experience = 0;
+	this->active = true;
 }
 
 Player::~Player()
@@ -84,19 +86,27 @@ void Player::die()
 {
 	Console::log("Oh Dear! You have Died!", 0xFFFF00FF);
 	Sound::play("deathSound.sfs");
-	tl_shutdown();
+	this->active = false;
+}
+
+int Player::expToNext()
+{
+	return (int)(100 * (pow(2.0, this->level - 1)));
 }
 
 void Player::update()
 {	
-	if (experience > 100 * (pow(2.0, this->level - 1)))
+	if (experience > expToNext())
 	{
 		this->level += 1;
 		Console::log("Level Up!", 0xFF9900FF);
-		this->Type()->HP(10 * this->level);
-		this->hP += (10 * this->level);
-		this->mana += (10 * this->level);
-		this->maxMana += (10 * this->level);
+		Sound::play("levelUp.sfs");
+		this->Type()->HP(5 * this->level);
+		this->hP += (5 * this->level);
+		this->mana += (5 * this->level);
+		this->maxMana += (5 * this->level);
+		this->Type()->attackDice.levelUp(this->level);
+		this->Type()->defenceDice.levelUp(this->level / 2);
 	}
 	if (this->HP() < 1)
 		this->die();
@@ -105,7 +115,7 @@ void Player::update()
 		Pickup* item = this->currCell->getPickup();
 		if (item->Type().ItemType() == GP)
 			this->hollaHollaGetDolla(item->Type().Value());
-		else if (inventory.size() >= 54)
+		else if (inventory.size() >= 48)
 		{
 			Console::log("Your Inventory is full!", 0xFFFFFFFF);
 			return;
@@ -123,27 +133,31 @@ void Player::update()
 void Player::printInventory(cint mousePos)
 {
 	cint currentLocation;
-	ostringstream health, mana, attack, defence, gold;
+	ostringstream health, mana, attack, defence, gold, level, xp;
 	int goldSpot = (tl_xres() - 6) * 2;
 	health << "HP: " << this->HP() << "/" << this->Type()->HP();
 	mana << "MP: " << this->mana << "/" << this->maxMana;
-	attack << "ATT: " << getAttModifier(false);
-	defence << "DEF: " << getDefModifier(false);
+	attack << "ATT:" << this->Type()->attackDice.print() << "+" << getAttModifier(false);
+	defence << "DEF:" << this->Type()->defenceDice.print() << "+" << getDefModifier(false);
 	gold << " X" << this->gold;
+	level << "LVL: " << this->level;
+	xp << "XP: " << experience << "/" << expToNext();
 	Console::print(health.str().c_str(), (tl_xres() - 6) * 2, 0);
 	Console::print(mana.str().c_str(), (tl_xres() - 6) * 2, 1);
 	Console::print(attack.str().c_str(), (tl_xres() - 6) * 2, 2);
 	Console::print(defence.str().c_str(), (tl_xres() - 6) * 2, 3);
 	Console::print(gold.str().c_str(), (tl_xres() - 6) * 2, 4);
+	Console::print(level.str().c_str(), (tl_xres() - 6) * 2, 5);
+	Console::print(xp.str().c_str(), (tl_xres() - 6) * 2, 6);
 	tl_scale(2);
 	tl_rendertile(0x2FA, goldSpot, 4); //Put in the gold piece
 	tl_scale(1);
-	Console::print("Inventory:", (tl_xres() - 6) * 2, 5);
+	Console::print("Inventory:", (tl_xres() - 6) * 2, 7);
 	int length = this->inventory.size();
 	for (int i = 0; i < length; i++)
 	{
 		this->inventory.at(i)->inventoryPosition = i;
-		currentLocation = cint(tl_xres() - 6 + (i % 6), 3 + (i / 6));
+		currentLocation = cint(tl_xres() - 6 + (i % 6), 4 + (i / 6));
 		if (mousePos == currentLocation)
 		{
 			tl_color(0xFF0000FF);
@@ -167,9 +181,9 @@ void Player::printInventory(cint mousePos)
 void Player::useItem(cint mousePos)
 {
 	Pickup* item = 0;
-	if ((mousePos.X() > tl_xres() - 7) && (mousePos.Y() > 2))
+	if ((mousePos.X() > tl_xres() - 7) && (mousePos.Y() > 3))
 	{
-		int inventoryPos = (((mousePos.Y() - 3) * 6) + abs((tl_xres() - mousePos.X() - 6)));
+		int inventoryPos = (((mousePos.Y() - 4) * 6) + abs((tl_xres() - mousePos.X() - 6)));
 		if (this->inventory.size() > inventoryPos)
 		{
 			item = this->inventory.at(inventoryPos);
@@ -200,9 +214,9 @@ void Player::sellItem(cint mousePos, vector<Pickup*>* shopInventory)
 	Pickup* item = 0;
 	int mx = mousePos.X();
 	int my = mousePos.Y();
-	if ((mx > tl_xres() - 7) && (my > 2))
+	if ((mx > tl_xres() - 7) && (my > 3))
 	{
-		int inventoryPos = (((my - 3) * 6) + abs((tl_xres() - mx - 6)));
+		int inventoryPos = (((my - 4) * 6) + abs((tl_xres() - mx - 6)));
 		if (this->inventory.size() > inventoryPos)
 		{
 			item = this->inventory.at(inventoryPos);
@@ -299,6 +313,7 @@ void Player::breakItem(Pickup* item, Pickup** slot)
 	ostringstream message;
 	message << "Your " << item->Name() << " broke!";
 	Console::log(message.str().c_str(), 0x35C0CDFF);
+	Sound::play("break.sfs");
 
 	item->equipped = false;
 	this->inventory.erase(inventory.begin() + item->inventoryPosition);

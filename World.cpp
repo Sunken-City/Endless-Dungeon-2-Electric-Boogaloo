@@ -262,15 +262,10 @@ void World::worldGen()
 		{
 			if((rand() % 30 + 1) == 15)
 			{
+				monsters.push_back(new Actor(actors.at(rand() % (actors.size())), cint(c->Pos()), c));
+				c->setActor(monsters.at(monsters.size() - 1));
 				if((rand() % 2 + 1) == 1)
-				{
-					monsters.push_back(new Actor(actors.at(rand() % (actors.size())), cint(c->Pos()), c));
-					c->setActor(monsters.at(monsters.size() - 1));
-				}
-				else
-				{
 					c->setPickup(new Pickup((*pickups.at(rand() % (pickups.size()))), cint(c->Pos()), c));
-				}
 			}
 		}
 	});
@@ -321,7 +316,7 @@ cint World::getStart()
 {
 	cint start = iterateOverWorldForPosition([&](cint** returnValue, cint* pos){
 		Cell* c = getCell(*pos);
-		if(c->getType() == FLOOR)
+		if(c->getType() == FLOOR && c->empty())
 				*returnValue = pos;
 	});
 	return start;
@@ -521,7 +516,7 @@ void World::findLinePath(int radius, int index, cint start, cint end)
 
 	int counter = 0;
 	cint netChange = cint(0,0);
-	while (netChange != end)//(paths.at(index).size() != abs(x1) + abs(y1))
+	while (netChange != end)
 	{
 		if (abs(counter) < abs(bigger))
 		{

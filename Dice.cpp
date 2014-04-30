@@ -51,3 +51,15 @@ int Dice::roll()
 	}
 	return total + modifier;
 }
+
+string Dice::print()
+{
+	ostringstream str;
+	str << this->rolls << "d" << this->sides;	
+	return str.str();
+}
+
+void Dice::levelUp(int playerLevel)
+{
+	this->sides += playerLevel;
+}

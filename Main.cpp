@@ -259,6 +259,22 @@ void menuDraw()
 	}
 }
 
+void endUpdate()
+{
+	if (tl_keywentdown("escape"))
+	{
+		tl_shutdown();
+	}
+}
+
+void endDraw()
+{
+	Console::menuPrint("GAME OVER", (tl_xres() - 9) / 2, (tl_yres() / 2) - 2, 1, 0xE80F00FF);
+	Console::menuPrint("You have died!", (tl_xres()*2 - 14)/2, tl_yres(), 2, 0xFFFFFFFF);
+	Console::menuPrint("(It was inevitable)", (tl_xres()*2 - 19)/2, tl_yres() + 1, 2, 0xFFFFFFFF);
+	Console::menuPrint("Press Esc", (tl_xres()*2 - 11)/2, tl_yres() + 3, 2, 0x00D9E8FF);
+}
+
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) 
 {
 	_CrtSetDbgFlag(_CRTDBG_CHECK_ALWAYS_DF);
@@ -286,10 +302,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	}
 	gameWorld.updateVisibility(&plr);
 
-	while(true)
+	while(plr.active)
 	{
 		tl_framestart(0);
 		update();
 		draw();
+	}
+	while(true)
+	{
+		tl_framestart(0);
+		endUpdate();
+		endDraw();
 	}
 };

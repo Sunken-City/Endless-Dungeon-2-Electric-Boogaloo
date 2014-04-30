@@ -77,25 +77,27 @@ void Console::menuPrint(char* string, int x, int y, int scale, int color)
 
 void Console::draw()
 {
+	int chatOffset = 0;
 	if (mouseLog != 0)
 	{
 		tl_color(0xCD21C5FF);
 		print(mouseLog, 0, (tl_yres() - 2) * 2);//(tl_xres() - 6) * 2
 		tl_color(0xFFFFFFFF);
 		mouseLog = 0;
+		chatOffset = 1;
 	}
 	int length = Console::chatLog.size() - 1;
 	if (length > -1)
 	{
 		tl_color(Console::chatLog.at(length).color);
-		print(Console::chatLog.at(length).message, 0, (tl_yres() - 2) * 2 + 1);
-		for (int i = 1; i < 5; i++)
+		print(Console::chatLog.at(length).message, 0, (tl_yres() - 2) * 2 + chatOffset);
+		for (int i = 1; i < 6 - chatOffset; i++)
 		{
 			
 			if (length - i > -1)
 			{
 				tl_color((Console::chatLog.at(length - i).color & 0xFEFEFEFF) >> 1);
-				print(Console::chatLog.at(length - i).message, 0, (tl_yres() - 2) * 2 + 1 + i);
+				print(Console::chatLog.at(length - i).message, 0, (tl_yres() - 2) * 2 + chatOffset + i);
 			}
 		}
 		tl_color(0xFFFFFFFF);

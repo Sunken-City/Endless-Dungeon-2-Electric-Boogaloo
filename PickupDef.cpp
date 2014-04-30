@@ -49,21 +49,21 @@ PickupDef::PickupDef(int difficulty, behavior itemType)
 		this->tileNum = 0x260 + min((difficulty / 100), 0xD);
 		this->durability = 30 - offset;
 		this->effectValue = (difficulty / 20);
-		this->name = "Dagger";
+		this->name = itemNames[this->tileNum];
 	}
 	else if (itemType == SHIELD)
 	{
 		this->tileNum = 0x2C0 + min((difficulty / 100), 0xD);
 		this->durability = 30 - offset;
 		this->effectValue = (difficulty / 20);
-		this->name = "Shield";
+		this->name = itemNames[this->tileNum];
 	}
 	else if (itemType == ARMOR)
 	{
 		this->tileNum = 0x2D0 + min((difficulty / 200), 0x6);
 		this->durability = 30 - offset;
 		this->effectValue = (difficulty / 20);
-		this->name = "Armor";
+		this->name = itemNames[this->tileNum];
 	}
 	else if (itemType == SPELL)
 	{
@@ -143,4 +143,49 @@ int PickupDef::ItemType()
 int PickupDef::castingCost()
 {
 	return this->castCost;
+}
+
+PickupDef::nameMap PickupDef::itemNames = initItemNames();
+
+PickupDef::nameMap PickupDef::initItemNames()
+{
+	nameMap newMap;
+	newMap[0x260] = "Dinner Knife";
+	newMap[0x261] = "Dagger";
+	newMap[0x262] = "Curved Dagger";
+	newMap[0x263] = "Survival Knife";
+	newMap[0x264] = "Tanto";
+	newMap[0x265] = "Steel Dagger";
+	newMap[0x266] = "Dark Dagger";
+	newMap[0x267] = "Katar";
+	newMap[0x268] = "Long Katar";
+	newMap[0x269] = "Triple Katar";
+	newMap[0x26A] = "Menacing Katar";
+	newMap[0x26B] = "Steel Katar";
+	newMap[0x26C] = "Dark Katar";
+	newMap[0x26D] = "Final Katar";
+	
+	newMap[0x2C0] = "Wood Shield";
+	newMap[0x2C1] = "Studded Shield";
+	newMap[0x2C2] = "Sturdy Shield";
+	newMap[0x2C3] = "Tower Shield";
+	newMap[0x2C4] = "Skull Shield";
+	newMap[0x2C5] = "Bone Shield";
+	newMap[0x2C6] = "Dark Shield";
+	newMap[0x2C7] = "Iron Shield";
+	newMap[0x2C8] = "Obsidian Shield";
+	newMap[0x2C9] = "Menacing Shield";
+	newMap[0x2CA] = "Steel Shield";
+	newMap[0x2CB] = "Pie Shield";
+	newMap[0x2CC] = "Mirror Shield";
+	newMap[0x2CD] = "Holy Shield";
+
+	newMap[0x2D0] = "Shirt";
+	newMap[0x2D1] = "Tunic";
+	newMap[0x2D2] = "Leather Armor";
+	newMap[0x2D3] = "Breastplate";
+	newMap[0x2D4] = "Iron Armor";
+	newMap[0x2D5] = "Gold Armor";
+	newMap[0x2D6] = "Demon Armor";
+	return newMap;
 }

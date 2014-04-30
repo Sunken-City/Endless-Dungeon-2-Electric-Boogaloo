@@ -38,7 +38,7 @@ void Shop::buyItem(cint mousePos, vector<Pickup*>* shopInventory, Player* plr)
 		if (shopInventory->size() > inventoryPos)
 		{
 			item = shopInventory->at(inventoryPos);
-			if (plr->inventory.size() >= 54)
+			if (plr->inventory.size() >= 48)
 			{
 				Console::log("Your Inventory is full!", 0xFFFFFFFF);
 				return;

@@ -34,6 +34,7 @@ public:
 	bool purchase(int price);
 	bool cast(int cost);
 	static void gainExperience(int exp);
+	int expToNext();
 
 private:
 	Pickup* sword;
