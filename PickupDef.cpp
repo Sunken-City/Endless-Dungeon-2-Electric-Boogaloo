@@ -9,7 +9,7 @@ PickupDef::funcMap PickupDef::initBehaviors()
 {
 	funcMap newMap;
 	newMap[GP] = [&](Player* plr, Pickup* item){};
-	newMap[HEALTH] = [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), item->Type().Value()/10); Sound::play("grandHeal.sfs");};
+	newMap[HEALTH] = [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), item->Type().Value()/10);};
 	newMap[WEAPON] = [&](Player* plr, Pickup* item){plr->equip(item);};
 	newMap[SHIELD] = newMap[WEAPON];
 	newMap[ARMOR] = newMap[WEAPON];
@@ -41,27 +41,27 @@ PickupDef::PickupDef(int difficulty, behavior itemType)
 	{
 		this->tileNum = 0x22D - min((difficulty / 100), 0xD);
 		this->durability = 1;
-		this->effectValue = min((difficulty / 30) + 9, 75);
+		this->effectValue = (difficulty / 20) + 9;
 		this->name = "Potion";
 	}
 	else if (itemType == WEAPON)
 	{
 		this->tileNum = 0x260 + min((difficulty / 100), 0xD);
-		this->durability = 30 - offset;
+		this->durability = 40 - offset;
 		this->effectValue = (difficulty / 20);
 		this->name = itemNames[this->tileNum];
 	}
 	else if (itemType == SHIELD)
 	{
 		this->tileNum = 0x2C0 + min((difficulty / 100), 0xD);
-		this->durability = 30 - offset;
+		this->durability = 40 - offset;
 		this->effectValue = (difficulty / 20);
 		this->name = itemNames[this->tileNum];
 	}
 	else if (itemType == ARMOR)
 	{
 		this->tileNum = 0x2D0 + min((difficulty / 200), 0x6);
-		this->durability = 30 - offset;
+		this->durability = 40 - offset;
 		this->effectValue = (difficulty / 20);
 		this->name = itemNames[this->tileNum];
 	}

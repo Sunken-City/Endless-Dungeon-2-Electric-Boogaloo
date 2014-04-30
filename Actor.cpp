@@ -70,6 +70,14 @@ void Actor::heal(int heals)
 	if (this->hP > type->HP())
 		this->hP = type->HP();
 	message << this->Name() << " healed " << heals << " HP!";
+	if (heals < 15)
+		Sound::play("smallHeal.sfs");
+	else if (heals < 30)
+		Sound::play("mediumHeal.sfs");
+	else if (heals < 60)
+		Sound::play("largeHeal.sfs");
+	else
+		Sound::play("grandHeal.sfs");
 	Console::log(message.str().c_str(), 0x00FF00FF);
 }
 
