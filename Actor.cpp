@@ -189,7 +189,11 @@ void Actor::AI(Actor* player)
 {
 	if (this->currCell != 0)
 	{
-		if (cint::manhattan(player->Pos(), this->position) < 4 && this->stamina > 0)
+		if (cint::manhattan(player->Pos(), this->position) == 1)
+		{
+			player->takesDamage(this->ATT());
+		}
+		else if (cint::manhattan(player->Pos(), this->position) < 4 && this->stamina > 0)
 		{
 			cint direction = cint::getDirection(player->Pos(), this->position);
 			//The enemies can move on diagonals. This makes them a little more challenging, and makes the code nice looking <3
@@ -215,10 +219,6 @@ void Actor::AI(Actor* player)
 		if (this->stamina == 0)
 		{
 			this->homeTile = this->currCell->Pos();
-		}
-		if (cint::manhattan(player->Pos(), this->position) == 1)
-		{
-			player->takesDamage(this->ATT());
 		}
 	}
 }

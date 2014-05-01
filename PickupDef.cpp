@@ -41,7 +41,7 @@ PickupDef::PickupDef(int difficulty, behavior itemType)
 	{
 		this->tileNum = 0x22D - min((difficulty / 100), 0xD);
 		this->durability = 1;
-		this->effectValue = (difficulty / 20) + 9;
+		this->effectValue = (difficulty / 20) + 19;
 		this->name = "Potion";
 	}
 	else if (itemType == WEAPON)
@@ -55,14 +55,14 @@ PickupDef::PickupDef(int difficulty, behavior itemType)
 	{
 		this->tileNum = 0x2C0 + min((difficulty / 100), 0xD);
 		this->durability = 40 - offset;
-		this->effectValue = (difficulty / 20);
+		this->effectValue = (difficulty / 40) + 1;
 		this->name = itemNames[this->tileNum];
 	}
 	else if (itemType == ARMOR)
 	{
 		this->tileNum = 0x2D0 + min((difficulty / 200), 0x6);
 		this->durability = 40 - offset;
-		this->effectValue = (difficulty / 20);
+		this->effectValue = (difficulty / 30) + 1;
 		this->name = itemNames[this->tileNum];
 	}
 	else if (itemType == SPELL)

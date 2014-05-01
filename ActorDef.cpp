@@ -18,8 +18,8 @@ ActorDef::ActorDef(int difficulty, int bias)
 	else if (difficulty >= 550)
 		this->tileNum = tier4[(rand() % 9)];
 	this->name = monsterNames[this->tileNum];
-	this->hitDice = Dice(2, (difficulty / 15));
-	this->attackDice = Dice(2, (difficulty / 15));
+	this->hitDice = Dice(2, (difficulty / 10), 5);
+	this->attackDice = Dice(1, (difficulty / 10), (difficulty / 100) + 2);
 	this->defenceDice = Dice(1, 1);
 	this->baseHP = hitDice.roll();
 }

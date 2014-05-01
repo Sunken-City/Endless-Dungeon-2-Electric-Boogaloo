@@ -154,10 +154,18 @@ void World::styleInit()
 	//Regal
 	styles.push_back(new TileSet(0x12B, 0x13B, 0x13C));
 	//Cavern
-	styles.push_back(new TileSet(0x11C, 0x109, 0x10B));
+	styles.push_back(new TileSet(0x11C, 0x10E, 0x10B));
 	//House
 	styles.push_back(new TileSet(0x16A, 0x16A, 0x120));
-	
+	//Crust
+	styles.push_back(new TileSet(0x12E, 0x10F, 0x12D));
+	//Ruins
+	styles.push_back(new TileSet(0x13E, 0x13E, 0x14F));
+	//Castle
+	styles.push_back(new TileSet(0x125, 0x135, 0x13F));
+	//Temple
+	styles.push_back(new TileSet(0x14E, 0x14E, 0x14D));
+
 	this->style = styles.at(rand() % (styles.size()));
 }
 

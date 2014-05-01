@@ -103,9 +103,9 @@ void Player::update()
 		Sound::play("levelUp.sfs");
 		this->Type()->HP(5 * this->level);
 		this->hP += (5 * this->level);
-		this->mana += (5 * this->level);
 		this->maxMana += (5 * this->level);
-		this->Type()->attackDice.levelUp(this->level);
+		this->mana += (5 * this->level);
+		this->Type()->attackDice.levelUp(this->level / 2);
 		this->Type()->defenceDice.levelUp(this->level / 2);
 	}
 	if (this->HP() < 1)
