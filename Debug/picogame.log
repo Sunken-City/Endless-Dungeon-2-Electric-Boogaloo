@@ -1,33 +1,27 @@
-﻿Build started 5/2/2014 4:20:15 PM.
+﻿Build started 5/2/2014 4:53:58 PM.
      1>Project "C:\Users\Pico\documents\visual studio 2010\Projects\picogame\picogame\picogame.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\picogame.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Actor.cpp Cell.cpp Pickup.cpp PickupDef.cpp Player.cpp Shop.cpp Utilities.cpp World.cpp main.cpp
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Actor.cpp Cell.cpp Pickup.cpp PickupDef.cpp Player.cpp Shop.cpp World.cpp main.cpp
          World.cpp
      1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(126): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
      1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(135): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
      1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(150): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
      1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(198): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
      1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(499): warning C4244: 'return' : conversion from 'double' to 'int', possible loss of data
-         PickupDef.cpp
-         Generating Code...
-     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(122): warning C4715: 'World::iterateOverWorldForPosition' : not all control paths return a value
-         Compiling...
-         main.cpp
-     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\main.cpp(204): warning C4101: 'e' : unreferenced local variable
-     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\main.cpp(210): warning C4101: 'e' : unreferenced local variable
-     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\main.cpp(216): warning C4101: 'e' : unreferenced local variable
-         Utilities.cpp
-         Shop.cpp
-     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\shop.cpp(38): warning C4018: '>' : signed/unsigned mismatch
          Player.cpp
      1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\player.cpp(188): warning C4018: '>' : signed/unsigned mismatch
      1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\player.cpp(209): warning C4018: '>' : signed/unsigned mismatch
+         PickupDef.cpp
+         Generating Code...
+     1>c:\users\pico\documents\visual studio 2010\projects\picogame\picogame\world.cpp(122): warning C4715: 'World::iterateOverWorldForPosition' : not all control paths return a value
+         Skipping... (no relevant changes detected)
+         main.cpp
+         Shop.cpp
          Pickup.cpp
          Cell.cpp
          Actor.cpp
-         Generating Code...
        Link:
          c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.exe" /NOLOGO /LIBPATH:"C:\Users\Pico\Documents\Visual Studio 2010\Projects\picogame\tilelibrary\base_materials\lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib tilelibd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\picogame.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Pico\documents\visual studio 2010\Projects\picogame\Debug\picogame.lib" /MACHINE:X86 Debug\Actor.obj
          Debug\ActorDef.obj
@@ -57,4 +51,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:43.65
+Time Elapsed 00:00:17.75

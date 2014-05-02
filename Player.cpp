@@ -306,11 +306,23 @@ void Player::breakItem(Pickup* item, Pickup** slot)
 
 	item->equipped = false;
 	this->inventory.erase(inventory.begin() + item->inventoryPosition);
+	recalculatePositions();
+}
+
+void Player::recalculatePositions()
+{
+	int i = 0;
+	for (vector<Pickup*>::iterator itr = this->inventory.begin(); itr != this->inventory.end(); itr++)
+	{
+		(*itr)->inventoryPosition = i;
+		i++;
+	}
 }
 
 void Player::breakItem(Pickup* item)
 {
-	this->inventory.erase(inventory.begin() + item->inventoryPosition);
+	this->inventory.erase(this->inventory.begin() + item->inventoryPosition);
+	recalculatePositions();
 }
 
 void Player::clearCell()

@@ -39,6 +39,7 @@ public:
 	bool purchase(int price);
 	static void gainExperience(int exp);
 	int expToNext();
+	void recalculatePositions();
 
 	void breakItem(Pickup*); //For consumables
 	void breakItem(Pickup*, Pickup**); //For equipment

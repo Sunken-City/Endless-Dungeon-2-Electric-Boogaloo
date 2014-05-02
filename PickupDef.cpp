@@ -46,7 +46,9 @@ PickupDef::funcMap PickupDef::initBehaviors()
 		Sound::play("scroll.sfs");
 		Pickup** sword = &plr->sword;
 		if (*sword != 0)
+		{
 			plr->breakItem(*sword, sword);
+		}
 		else
 			Console::log("Nothing happened!", 0x620CACFF);
 	};
