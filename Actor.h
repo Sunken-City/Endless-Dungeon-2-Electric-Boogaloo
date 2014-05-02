@@ -47,6 +47,8 @@ public:
 	void AI(Actor* player);
 	void describe();
 
+	int getColor();
+
 
 
 protected:
@@ -56,6 +58,7 @@ protected:
 	ActorDef* type;
 	Cell* currCell;
 
+	int hurtCounter;
 	int stamina;
 	int maxStamina;
 	

@@ -51,6 +51,13 @@ void Console::print(const char* string, int x, int y)
 	tl_scale(1);
 }
 
+void Console::print(const char* string, int x, int y, int color)
+{
+	tl_color(color);
+	Console::print(string, x, y);
+	tl_color(0xFFFFFFFF);
+}
+
 void Console::menuPrint(const char* string, int x, int y, int scale, int color)
 {
 	tl_scale(scale);

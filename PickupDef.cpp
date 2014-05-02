@@ -1,6 +1,8 @@
 #include "PickupDef.h"
 #include "Pickup.h"
 #include "Player.h"
+#include "Cell.h"
+#include "World.h"
 
 
 PickupDef::funcMap PickupDef::behaviors = initBehaviors();
@@ -9,11 +11,86 @@ PickupDef::funcMap PickupDef::initBehaviors()
 {
 	funcMap newMap;
 	newMap[GP] = [&](Player* plr, Pickup* item){};
-	newMap[HEALTH] = [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), item->Type().Value()/10);};
+	newMap[HEALTH] = [&](Player* plr, Pickup* item){plr->heal(item->Type().Value());};
 	newMap[WEAPON] = [&](Player* plr, Pickup* item){plr->equip(item);};
 	newMap[SHIELD] = newMap[WEAPON];
 	newMap[ARMOR] = newMap[WEAPON];
-	newMap[SPELL] = [&](Player* plr, Pickup* item){plr->heal(item->Type().Value(), 0); Sound::play("grandHeal.sfs");};
+	newMap[SCROLL] = [&](Player* plr, Pickup* item){plr->heal(item->Type().Value());};
+	
+	newMap[HEAL] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		plr->heal(item->Type().Value());
+	};
+
+	newMap[HALF_HEAL] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		Console::log("You were healed half of your health!", 0x620CACFF);
+		plr->heal(plr->Type()->HP() / 2);
+	};
+	newMap[FULL_HEAL] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		Console::log("You were healed fully!", 0x620CACFF);
+		plr->heal(plr->Type()->HP());
+	};
+	newMap[FIX_SWORD] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		if (plr->sword != 0)
+		{
+			plr->sword->Durability(item->Type().Value());
+			Console::log("Your Sword was repaired!", 0x620CACFF);
+		}
+		else
+			Console::log("Nothing happened!", 0x620CACFF);
+	};
+	newMap[BREAK_SWORD] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		Pickup** sword = &plr->sword;
+		if (*sword != 0)
+			plr->breakItem(*sword, sword);
+		else
+			Console::log("Nothing happened!", 0x620CACFF);
+	};
+	newMap[FIX_SHIELD] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		if (plr->shield != 0)
+		{
+			plr->shield->Durability(item->Type().Value());
+			Console::log("Your Shield was repaired!", 0x620CACFF);
+		}
+		else
+			Console::log("Nothing happened!", 0x620CACFF);
+	};
+	newMap[BREAK_SHIELD] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		Pickup** shield = &plr->shield;
+		if (*shield != 0)
+			plr->breakItem(*shield, shield);
+		else
+			Console::log("Nothing happened!", 0x620CACFF);
+	};
+	newMap[FIX_ARMOR] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		if (plr->armor != 0)
+		{
+			plr->armor->Durability(item->Type().Value());
+			Console::log("Your Shield was repaired!", 0x620CACFF);
+		}
+		else
+			Console::log("Nothing happened!", 0x620CACFF);
+	};
+	newMap[BREAK_ARMOR] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		Pickup** armor = &plr->armor;
+		if (*armor != 0)
+			plr->breakItem(*armor, armor);
+		else
+			Console::log("Nothing happened!", 0x620CACFF);
+	};
+	newMap[DOWN_FLOOR] = [&](Player* plr, Pickup* item){
+		Sound::play("scroll.sfs");
+		Console::log("You were teleported down a level!", 0x620CACFF);
+		plr->world->canChangeFloor = true;
+	};
 	return newMap;
 }
 
@@ -26,14 +103,14 @@ PickupDef::PickupDef(int difficulty, behavior itemType)
 {
 	int offset = ((rand() % 50) - 25);
 	difficulty += offset;
-	this->use = behaviors[itemType];
 	this->type = itemType;
+	this->type2 = itemType;
 	this->castCost = 5;
 
 	if (itemType == GP)
 	{
 		this->tileNum = 0x2FA;
-		this->effectValue = ((rand() % (difficulty)) + (difficulty / 10));
+		this->effectValue = (rand() % (difficulty) + (difficulty / 10));
 		this->name = "GP";
 		this->durability = 1;
 	}
@@ -65,13 +142,15 @@ PickupDef::PickupDef(int difficulty, behavior itemType)
 		this->effectValue = (difficulty / 30) + 1;
 		this->name = itemNames[this->tileNum];
 	}
-	else if (itemType == SPELL)
+	else if (itemType == SCROLL)
 	{
-		this->tileNum = 0x367 + min((difficulty / 200), 0x6);
+		this->tileNum = 0x31A;
 		this->durability = 1;
 		this->effectValue = (difficulty / 20);
-		this->name = "Healing Scroll";
+		this->type2 = (behavior)((rand() % (END_OF_LIST - 10)) + 10);
+		this->name = "Scroll";
 	}
+	this->use = behaviors[this->type2];
 	
 }
 
@@ -98,6 +177,7 @@ void PickupDef::serialize(Serializer write)
 	write.IO<int>(this->durability);
 	write.IO<string>(this->name);
 	write.IO<behavior>(this->type);
+	write.IO<behavior>(this->type2);
 	write.IO<int>(this->castCost);
 }
 
@@ -109,8 +189,9 @@ PickupDef* PickupDef::reconstruct(Serializer read)
 	read.IO<int>(p->durability);
 	read.IO<string>(p->name);
 	read.IO<behavior>(p->type);
+	read.IO<behavior>(p->type2);
 	read.IO<int>(p->castCost);
-	p->use = behaviors[p->type];
+	p->use = behaviors[p->type2];
 	return p;
 }
 
@@ -138,11 +219,6 @@ int PickupDef::Durability()
 int PickupDef::ItemType()
 {
 	return this->type;
-}
-
-int PickupDef::castingCost()
-{
-	return this->castCost;
 }
 
 PickupDef::nameMap PickupDef::itemNames = initItemNames();

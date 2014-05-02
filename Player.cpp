@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "tilelib.h"
 #include "Pickup.h"
+#include "World.h"
 
 int Player::experience = 0;
 
@@ -9,9 +10,11 @@ Player::Player()
 	this->isPlayer = true;
 	this->mute = true;
 	this->active = true;
+	this->hurtCounter = 0;
+	this->world = 0;
 }
 
-Player::Player(cint startingPosition)
+Player::Player(cint startingPosition, World* gameWorld)
 {
 	this->isPlayer = true;
 	this->type = new ActorDef(0x0AC, "Pico", 100, Dice(2,3), Dice(2,2));
@@ -26,11 +29,10 @@ Player::Player(cint startingPosition)
 	this->armor = 0;
 	this->gold = 0;
 	this->mute = true;
-	this->mana = 20;
-	this->maxMana = 20;
 	this->level = 1;
 	experience = 0;
 	this->active = true;
+	this->world = gameWorld;
 }
 
 Player::~Player()
@@ -41,8 +43,6 @@ Player::~Player()
 void Player::serialize(Serializer write)
 {
 	Actor::serialize(write);
-	write.IO<int>(this->mana);
-	write.IO<int>(this->maxMana);
 	write.IO<int>(this->level);
 	write.IO<int>(this->gold);
 	write.IO<int>(experience);
@@ -60,8 +60,6 @@ Player* Player::reconstruct(Serializer read)
 	read.IO<int>(p->maxStamina);
 	read.IO<int>(p->hP);
 	read.IO<status>(p->Status);
-	read.IO<int>(p->mana);
-	read.IO<int>(p->maxMana);
 	read.IO<int>(p->level);
 	read.IO<int>(p->gold);
 	read.IO<int>(experience);
@@ -103,8 +101,6 @@ void Player::update()
 		Sound::play("levelUp.sfs");
 		this->Type()->HP(5 * this->level);
 		this->hP += (5 * this->level);
-		this->maxMana += (5 * this->level);
-		this->mana += (5 * this->level);
 		this->Type()->attackDice.levelUp(this->level / 2);
 		this->Type()->defenceDice.levelUp(this->level / 2);
 	}
@@ -133,24 +129,30 @@ void Player::update()
 void Player::printInventory(cint mousePos)
 {
 	cint currentLocation;
-	ostringstream health, mana, attack, defence, gold, level, xp;
+	ostringstream health, attack, defence, gold, level, xp;
 	int goldSpot = (tl_xres() - 6) * 2;
-	health << "HP: " << this->HP() << "/" << this->Type()->HP();
-	mana << "MP: " << this->mana << "/" << this->maxMana;
+	int hp = this->HP();
+	int maxHP = this->Type()->HP();
+	level << "LVL: " << this->level;
+	xp << "XP: " << experience << "/" << expToNext();
+	health << "HP: " << hp << "/" << maxHP;
 	attack << "ATT:" << this->Type()->attackDice.print() << "+" << getAttModifier(false);
 	defence << "DEF:" << this->Type()->defenceDice.print() << "+" << getDefModifier(false);
 	gold << " X" << this->gold;
-	level << "LVL: " << this->level;
-	xp << "XP: " << experience << "/" << expToNext();
-	Console::print(health.str().c_str(), (tl_xres() - 6) * 2, 0);
-	Console::print(mana.str().c_str(), (tl_xres() - 6) * 2, 1);
-	Console::print(attack.str().c_str(), (tl_xres() - 6) * 2, 2);
-	Console::print(defence.str().c_str(), (tl_xres() - 6) * 2, 3);
-	Console::print(gold.str().c_str(), (tl_xres() - 6) * 2, 4);
-	Console::print(level.str().c_str(), (tl_xres() - 6) * 2, 5);
-	Console::print(xp.str().c_str(), (tl_xres() - 6) * 2, 6);
+	/*This statement shifts the color from Green to Red slowly depending on the ratio of the player's HP
+	* In Short:
+	* Green = 0xFF * (HP/MaxHP)
+	* Red = 0xFF * (1 - (HP/MaxHP))
+	*/
+	int hpColor = 0xFF + (0x1000000 * (int)(0xFF * (1.0 - ((double)hp/(double)maxHP))) + (0x10000 * (int)(0xFF * ((double)hp/(double)maxHP))));
+	Console::print(level.str().c_str(), (tl_xres() - 6) * 2, 0);
+	Console::print(xp.str().c_str(), (tl_xres() - 6) * 2, 1);
+	Console::print(health.str().c_str(), (tl_xres() - 6) * 2, 2, hpColor);
+	Console::print(attack.str().c_str(), (tl_xres() - 6) * 2, 3);
+	Console::print(defence.str().c_str(), (tl_xres() - 6) * 2, 4);
+	Console::print(gold.str().c_str(), (tl_xres() - 6) * 2, 5);
 	tl_scale(2);
-	tl_rendertile(0x2FA, goldSpot, 4); //Put in the gold piece
+	tl_rendertile(0x2FA, goldSpot, 5); //Put in the gold piece
 	tl_scale(1);
 	Console::print("Inventory:", (tl_xres() - 6) * 2, 7);
 	int length = this->inventory.size();
@@ -161,8 +163,7 @@ void Player::printInventory(cint mousePos)
 		if (mousePos == currentLocation)
 		{
 			tl_color(0xFF0000FF);
-			tl_rendertile(0x125, currentLocation.X(), currentLocation.Y());
-			tl_color(0xFFFFFFFF);
+			tl_rendertile(0x13E, currentLocation.X(), currentLocation.Y());
 			if (Shop::inStore)
 				this->inventory.at(i)->describe(SELL);
 			else
@@ -170,10 +171,10 @@ void Player::printInventory(cint mousePos)
 		}
 		if (this->inventory.at(i)->equipped)
 		{
-			tl_color(0x00FF00FF);
-			tl_rendertile(0x125, currentLocation.X(), currentLocation.Y());
-			tl_color(0xFFFFFFFF);
+			tl_color(0x84E900FF);
+			tl_rendertile(0x13E, currentLocation.X(), currentLocation.Y());
 		}
+		tl_color(0xFFFFFFFF);
 		tl_rendertile(this->inventory.at(i)->Tile(), currentLocation.X(), currentLocation.Y());
 	}
 }
@@ -187,21 +188,9 @@ void Player::useItem(cint mousePos)
 		if (this->inventory.size() > inventoryPos)
 		{
 			item = this->inventory.at(inventoryPos);
-			if (item->ItemType() == SPELL)
-			{
-				if (cast(item->Type().castingCost()))
-				{
-					item->use(this, item);
-					if (item->degrade())
-						breakItem(item);
-				}
-			}
-			else
-			{
-				item->use(this, item);
-			}
+			item->use(this, item);
 			//If it breaks, then delete it.
-			if (item->ItemType() == HEALTH && item->degrade())
+			if (((item->ItemType() == HEALTH) || (item->ItemType() == SCROLL)) && item->degrade())
 			{
 				breakItem(item);
 			}
@@ -353,32 +342,7 @@ bool Player::purchase(int price)
 		return false;
 }
 
-bool Player::cast(int cost)
-{
-	if (this->mana - cost >= 0)
-	{
-		this->mana -= cost;
-		return true;
-	}
-	else
-	{
-		Console::log("Not enough mana!", 0x0000FFFF);
-		return false;
-	}
-}
-
 void Player::gainExperience(int exp)
 {
 	experience += exp;
-}
-
-void Player::heal(int hp, int mana)
-{
-	ostringstream manaMessage;
-	Actor::heal(hp);
-	this->mana += mana;
-	if (this->mana > maxMana)
-		this->mana = maxMana;
-	manaMessage << this->Name() << " restored " << mana << " Mana!";
-	Console::log(manaMessage.str().c_str(), 0x0099FFFF);
 }

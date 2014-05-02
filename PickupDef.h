@@ -10,7 +10,9 @@ class Player;
 
 using namespace std;
 
-static enum behavior {GP = -1, HEALTH = 0, WEAPON = 1, SHIELD = 2, ARMOR = 3, SPELL = 4};
+static enum behavior {GP = -1, HEALTH = 0, WEAPON = 1, SHIELD = 2, ARMOR = 3, SCROLL = 4,
+	//Spell Behaviors go down here. Not used for generation of weapons, only scroll uses.
+	HEAL = 10, HALF_HEAL, FULL_HEAL, FIX_SWORD, BREAK_SWORD, FIX_SHIELD, BREAK_SHIELD, FIX_ARMOR, BREAK_ARMOR, DOWN_FLOOR, END_OF_LIST};
 
 class PickupDef : public Serializeable
 {
@@ -34,7 +36,6 @@ public:
 	int Value();
 	int Durability();
 	int ItemType();
-	int castingCost();
 	function<void(Player *, Pickup *)> use;
 
 private:
@@ -43,6 +44,7 @@ private:
 	int durability;
 	string name;
 	behavior type;
+	behavior type2;
 	int castCost;
 
 };

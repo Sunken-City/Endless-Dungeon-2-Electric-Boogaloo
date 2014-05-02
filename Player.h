@@ -4,6 +4,7 @@
 #include "Cell.h"
 
 class Pickup;
+class World;
 
 class Player : public Actor
 {
@@ -11,11 +12,16 @@ public:
 	void serialize(Serializer write);
 	static Player* reconstruct(Serializer read);
 
+	World* world;
+
 	vector<Pickup*> inventory;
 	int gold;
+	Pickup* sword;
+	Pickup* shield;
+	Pickup* armor;
 
 	Player();
-	Player(cint startingPosition);
+	Player(cint startingPosition, World* gameWorld);
 	~Player();
 	void die();
 	void update();
@@ -23,7 +29,6 @@ public:
 	void useItem(cint mousePos);
 	void sellItem(cint mousePos, vector<Pickup*>* shopInventory);
 	void equip(Pickup* item);
-	void heal(int hp, int mana);
 	int ATT();
 	int DEF();
 	int getDefModifier(bool checkForDegrade);
@@ -32,19 +37,14 @@ public:
 	void nextFloor(cint pos, Cell* newCell);
 	void hollaHollaGetDolla(int dolla);
 	bool purchase(int price);
-	bool cast(int cost);
 	static void gainExperience(int exp);
 	int expToNext();
 
-private:
-	Pickup* sword;
-	Pickup* shield;
-	Pickup* armor;
-	int mana;
-	int maxMana;
-	int level;
-	static int experience;
 	void breakItem(Pickup*); //For consumables
 	void breakItem(Pickup*, Pickup**); //For equipment
+
+private:
+	int level;
+	static int experience;
 };
 

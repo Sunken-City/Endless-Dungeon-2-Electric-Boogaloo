@@ -20,6 +20,7 @@ public:
 	static void draw();
 	static void print(char* string, int x, int y);
 	static void print(const char* string, int x, int y);
+	static void print(const char* string, int x, int y, int color);
 	static void menuPrint(const char* string, int x, int y, int scale, int color);
 	static void menuPrint(char* string, int x, int y, int scale, int color);
 

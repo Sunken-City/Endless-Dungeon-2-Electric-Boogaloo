@@ -114,6 +114,15 @@ int Pickup::Durability()
 	return this->durability;
 }
 
+void Pickup::Durability(int difference)
+{
+	this->durability += difference;
+	if (this->durability > this->type.Durability())
+		this->durability = this->type.Durability();
+	if (this->durability < 1)
+		this->durability = 1;
+}
+
 void Pickup::describe()
 {
 	ostringstream description;

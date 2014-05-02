@@ -33,6 +33,7 @@ public:
 	vector<Actor*> monsters;
 	vector<TileSet*> styles;
 	vector<Pickup*> inventory;
+	bool canChangeFloor;	
 
 	World();
 	~World();

@@ -35,6 +35,7 @@ public:
 	void pickedUp();
 	bool degrade();
 	int Durability();
+	void Durability(int difference);
 	int ItemType();
 	void describe();
 	void describe(action);

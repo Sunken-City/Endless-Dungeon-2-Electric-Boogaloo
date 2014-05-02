@@ -18,7 +18,6 @@ using namespace std;
 Player plr;
 World gameWorld;
 
-bool canChangeFloor = false;
 bool newGameHover = false;
 bool loadGameHover = false;
 bool onMenu = true;
@@ -131,9 +130,9 @@ void update()
 	else if (tl_keywentdown("up")||tl_keywentdown("w"))
 		takeTurn(UP);
 	else if (tl_keywentdown("return") && plr.getCell()->getType() == STAIRS)
-		canChangeFloor = true;
+		gameWorld.canChangeFloor = true;
 	else if (tl_keywentdown("q"))
-		canChangeFloor = true;
+		gameWorld.canChangeFloor = true;
 }
 
 void draw()
@@ -148,33 +147,39 @@ void draw()
 		{
 			currX = (plr.Pos().X() - ((tl_xres() - 6) / 2) + i);
 			currY = (plr.Pos().Y() - ((tl_yres() - 2) / 2) + j);
-			tl_color(0xFFFFFF00 + gameWorld.getCell(currX , currY)->Visibility());
+			Cell * currCell = gameWorld.getCell(currX , currY);
+
+			tl_color(0xFFFFFF00 + currCell->Visibility());
 			tl_rendertile(gameWorld.getTile(currX , currY), i, j);
-			if(gameWorld.getCell(currX , currY)->hasPickup())
-				tl_rendertile(gameWorld.getCell(currX , currY)->getPickup()->Tile(), i, j);
-			if(gameWorld.getCell(currX , currY)->hasActor())
-				tl_rendertile(gameWorld.getCell(currX , currY)->getActor()->Tile(), i, j);
-			
+
+			if(currCell->hasPickup())
+				tl_rendertile(currCell->getPickup()->Tile(), i, j);
+			if(currCell->hasActor())
+			{
+				Actor* currActor = currCell->getActor();
+				tl_color(currActor->getColor() + currCell->Visibility());
+				tl_rendertile(currActor->Tile(), i, j);
+			}
 			tl_color(0xFFFFFFFF);
 
 			if(cint(i, j) == mousePosition)
 			{
-				if(gameWorld.getCell(currX , currY)->hasActor())
-					gameWorld.getCell(currX , currY)->getActor()->describe();
-				if(gameWorld.getCell(currX , currY)->hasPickup())
-					gameWorld.getCell(currX , currY)->getPickup()->describe();
-				if(gameWorld.getCell(currX , currY)->getType() == STAIRS)
+				if(currCell->hasActor())
+					currCell->getActor()->describe();
+				if(currCell->hasPickup())
+					currCell->getPickup()->describe();
+				if(currCell->getType() == STAIRS)
 					Console::quickLog("Press Enter on Stairs to Descend");
 			}
 		}
 	}
 	plr.printInventory(mousePosition);
-	if (canChangeFloor)
+	if (gameWorld.canChangeFloor)
 	{
 		Sound::play("staircase.sfs");
 		gameWorld.nextFloor(&plr);		
 	}
-	canChangeFloor = false;
+	gameWorld.canChangeFloor = false;
 	if (gameWorld.Shop->Pos() == plr.Pos())
 		Shop::render(mousePosition, &gameWorld.inventory);
 	else
@@ -292,7 +297,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	if (!loaded)
 	{
 		gameWorld.initialize();
-		plr = Player(gameWorld.getStart());
+		plr = Player(gameWorld.getStart(), &gameWorld);
 		plr.move(gameWorld.getStart(), gameWorld.getCell(plr.Pos().X(), plr.Pos().Y()));
 		gameWorld.setPlayer(&plr);
 	}

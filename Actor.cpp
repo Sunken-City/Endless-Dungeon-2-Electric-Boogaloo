@@ -7,6 +7,7 @@ Actor::Actor()
 	this->isPlayer = false;
 	this->active = true;
 	this->mute = false;
+	this->hurtCounter = 0;
 }
 
 Actor::Actor(ActorDef* actorType, cint position, Cell* currentCell)
@@ -21,6 +22,7 @@ Actor::Actor(ActorDef* actorType, cint position, Cell* currentCell)
 	this->maxStamina = 10;
 	this->stamina = this->maxStamina;
 	this->Status = NORMAL;
+	this->hurtCounter = 0;
 }
 
 Actor::~Actor()
@@ -78,6 +80,7 @@ void Actor::heal(int heals)
 		Sound::play("largeHeal.sfs");
 	else
 		Sound::play("grandHeal.sfs");
+	this->hurtCounter = -1 * heals;
 	Console::log(message.str().c_str(), 0x00FF00FF);
 }
 
@@ -85,21 +88,20 @@ void Actor::takesDamage(int enemyAttack)
 {
 	ostringstream message;
 	int defRoll = this->DEF();
+	int netDamage = (enemyAttack - defRoll);
 
-	if((enemyAttack - defRoll) > 0)
+	if(netDamage > 0)
 	{
-		this->hP -= (enemyAttack - defRoll);
-		message << this->Name() << " takes " << (enemyAttack - defRoll) << " damage!";
-		//if (!mute)
-			Sound::play("damage.sfs");
+		this->hP -= netDamage;
+		message << this->Name() << " takes " << netDamage << " damage!";
+		this->hurtCounter = netDamage * 2;
+		Sound::play("damage.sfs");
 	}
 	else
 	{
 		message << this->Name() << " blocks the attack!";
-		//if (!mute)
-			Sound::play("block.sfs");
+		Sound::play("block.sfs");
 	}
-
 	Console::log(message.str().c_str(), 0xFF0000FF);
 }
 
@@ -161,6 +163,26 @@ Cell* Actor::getCell()
 void Actor::setCell(Cell* newCell)
 {
 	this->currCell = newCell;
+}
+
+int Actor::getColor()
+{
+	//No alpha for the numbers here, because we add it later via visibility
+	//Healing
+	if(this->hurtCounter < 0)
+	{
+		this->hurtCounter++;
+		return 0x00FF0000;
+	}
+	//Taking Damage
+	if(this->hurtCounter > 0)
+	{
+		this->hurtCounter--;
+		return 0xFF000000;
+	}
+	//Nothing
+	else
+		return 0xFFFFFF00; 
 }
 
 void Actor::die()

@@ -4,6 +4,7 @@ int World::viewRange = 5;
 
 World::World()
 {
+    canChangeFloor = false;
 	generateVisibility();
 	difficultyLevel = 50;
 	dummy = Cell();
@@ -83,6 +84,7 @@ void World::reconstruct(Serializer read)
 	cint pos = this->plr->Pos();
 	map[pos.X()][pos.Y()]->setActor(this->plr);
 	this->plr->setCell(map[pos.X()][pos.Y()]);
+	this->plr->world = this;
 
 	findActors();
 	this->Shop = findShop();	
@@ -139,7 +141,7 @@ void World::pickupInit()
 		pickups.push_back(new PickupDef(difficultyLevel, WEAPON));
 		pickups.push_back(new PickupDef(difficultyLevel, SHIELD));
 		pickups.push_back(new PickupDef(difficultyLevel, ARMOR));
-		pickups.push_back(new PickupDef(difficultyLevel, SPELL));
+		pickups.push_back(new PickupDef(difficultyLevel, SCROLL));
 	}
 }
 
@@ -439,7 +441,7 @@ void World::initShop()
 		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, WEAPON)));
 		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, SHIELD)));
 		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, ARMOR)));
-		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, SPELL)));
+		this->inventory.push_back(new Pickup(PickupDef(difficultyLevel + i, SCROLL)));
 	}
 	Utilities::sortInventory(&this->inventory);
 }
